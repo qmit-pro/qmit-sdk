@@ -1,0 +1,66 @@
+#
+# ref:
+#  - https://kubernetes.io/docs/reference/access-authn-authz/rbac/
+#  - https://cloud.google.com/kubernetes-engine/docs/how-to/role-based-access-control?hl=ko
+#
+
+## Common Policies
+# G-Suite Group 'dev-infra@qmit.kr' has cluster-admin role
+kind: ClusterRoleBinding
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: cluster-admin-binding
+subjects:
+  - kind: Group
+    name: dev-infra@qmit.kr
+roleRef:
+  kind: ClusterRole
+  name: cluster-admin
+  apiGroup: rbac.authorization.k8s.io
+---
+
+# G-Suite Group 'gke-security-groups@qmit.kr' has view and system:basic-user role for all namespaces
+kind: ClusterRoleBinding
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: view-binding
+subjects:
+  - kind: Group
+    name: gke-security-groups@qmit.kr
+roleRef:
+  kind: ClusterRole
+  name: view
+  apiGroup: rbac.authorization.k8s.io
+---
+kind: ClusterRoleBinding
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: basic-user-binding
+subjects:
+  - kind: Group
+    name: gke-security-groups@qmit.kr
+roleRef:
+  kind: ClusterRole
+  name: system:basic-user
+  apiGroup: rbac.authorization.k8s.io
+---
+
+# G-Suite Group 'gke-security-groups@qmit.kr' has edit role for playground namespace
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: playground
+---
+kind: RoleBinding
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: edit-binding
+  namespace: playground
+subjects:
+  - kind: Group
+    name: gke-security-groups@qmit.kr
+roleRef:
+  kind: ClusterRole
+  name: edit
+  apiGroup: rbac.authorization.k8s.io
+---

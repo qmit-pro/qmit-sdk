@@ -1,0 +1,22 @@
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  annotations:
+    cert-manager.io/cluster-issuer: letsencrypt-prod
+  labels:
+    app: source-ip-app
+  name: source-ip-app
+  namespace: default
+spec:
+  rules:
+    - host: ip.qmit.pro
+      http:
+        paths:
+          - backend:
+              serviceName: source-ip-app
+              servicePort: 80
+            path: /
+  tls:
+    - hosts:
+        - ip.qmit.pro
+      secretName: ip-qmit-pro-cert

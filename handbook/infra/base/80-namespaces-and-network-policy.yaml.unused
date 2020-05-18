@@ -1,0 +1,46 @@
+#
+# ref: https://github.com/ahmetb/kubernetes-network-policy-recipes
+#
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: prod
+  labels:
+    env: prod
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: dev
+  labels:
+    env: dev
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: namespace-ingress-policy
+  namespace: dev
+spec:
+  podSelector: {}
+  ingress:
+    - from:
+        - namespaceSelector:
+            matchExpressions:
+              - key: env
+                operator: NotIn
+                values: [prod]
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: namespace-ingress-policy
+  namespace: prod
+spec:
+  podSelector: {}
+  ingress:
+    - from:
+        - namespaceSelector:
+            matchExpressions:
+              - key: env
+                operator: NotIn
+                values: [dev]

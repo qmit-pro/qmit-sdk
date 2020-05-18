@@ -1,0 +1,156 @@
+### References
+#- **https://github.com/sethvargo/vault-on-gke**
+#    - Customization:
+#    - Deployed without Terraform
+#    - TLS bridging from nginx-ingress
+#    - Certificate from cert-manager (ACME)
+#    - Current replicas=1
+#- https://github.com/kelseyhightower/vault-on-google-kubernetes-engine
+#- https://www.vaultproject.io/docs/secrets/gcp/index.html
+#- https://www.vaultproject.io/docs/install/index.html
+
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: vault
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: vault
+  namespace: vault
+spec:
+  clusterIP: None
+  ports:
+    - name: http
+      port: 8200
+    - name: server
+      port: 8201
+  selector:
+    app: vault
+---
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  annotations:
+    cert-manager.io/cluster-issuer: letsencrypt-prod
+  labels:
+    app: vault
+  name: vault
+  namespace: vault
+spec:
+  rules:
+    - host: vault.internal.qmit.pro
+      http:
+        paths:
+          - backend:
+              serviceName: vault
+              servicePort: 8200
+            path: /
+  tls:
+    - hosts:
+        - vault.internal.qmit.pro
+      secretName: vault-internal-qmit-pro-cert
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  labels:
+    app: vault
+  name: vault
+  namespace: vault
+spec:
+  serviceName: vault
+  replicas: 1
+  selector:
+    matchLabels:
+      app: vault
+  template:
+    metadata:
+      labels:
+        app: vault
+    spec:
+      affinity:
+        podAntiAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+            - weight: 60
+              podAffinityTerm:
+                labelSelector:
+                  matchExpressions:
+                    - key: app
+                      operator: In
+                      values: ["vault"]
+                topologyKey: kubernetes.io/hostname
+      terminationGracePeriodSeconds: 10
+      containers:
+        - name: vault-init
+          image: "sethvargo/vault-init:1.0.0"
+          imagePullPolicy: IfNotPresent
+          resources:
+            requests:
+              cpu: "100m"
+              memory: "64Mi"
+          env:
+            - name: GCS_BUCKET_NAME
+              value: "qmit-pro_vault"
+            - name: KMS_KEY_ID
+              value: "projects/qmit-pro/locations/global/keyRings/vault/cryptoKeys/vault-init"
+            - name: VAULT_ADDR
+              value: "http://127.0.0.1:8200"
+            - name: VAULT_SECRET_SHARES
+              value: "1"
+            - name: VAULT_SECRET_THRESHOLD
+              value: "1"
+        - name: vault
+          image: "vault:1.2.2"
+          imagePullPolicy: IfNotPresent
+          args: ["server"]
+          securityContext:
+            capabilities:
+              add: ["IPC_LOCK"]
+          ports:
+            - containerPort: 8200
+              name: vault-port
+              protocol: TCP
+            - containerPort: 8201
+              name: cluster-port
+              protocol: TCP
+          resources:
+            requests:
+              cpu: "300m"
+              memory: "256Mi"
+          env:
+            - name: VAULT_ADDR
+              value: "http://127.0.0.1:8200"
+            - name: POD_IP_ADDR
+              valueFrom:
+                fieldRef:
+                  fieldPath: status.podIP
+            # https://www.vaultproject.io/docs/configuration/#high-availability-parameters
+            - name: VAULT_LOCAL_CONFIG
+              value: |
+                api_addr     = "https://vault.internal.qmit.pro"
+                cluster_addr = "http://$(POD_IP_ADDR):8201"
+                log_level = "warn"
+                ui = true
+                seal "gcpckms" {
+                  project    = "qmit-pro"
+                  region     = "global"
+                  key_ring   = "vault"
+                  crypto_key = "vault-init"
+                }
+                storage "gcs" {
+                  bucket     = "qmit-pro_vault"
+                  ha_enabled = "true"
+                }
+                listener "tcp" {
+                  address     = "0.0.0.0:8200"
+                  tls_disable = "true"
+                }
+          readinessProbe:
+            httpGet:
+              path: /v1/sys/health?standbyok=true
+              port: 8200
+              scheme: HTTP
+            initialDelaySeconds: 5
+            periodSeconds: 5

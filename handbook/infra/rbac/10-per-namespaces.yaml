@@ -1,0 +1,92 @@
+### Team level policies
+
+# Backend/Business team
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: biz
+  labels:
+    parent: backend
+---
+kind: RoleBinding
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: edit-binding
+  namespace: biz
+subjects:
+  - kind: Group
+    name: dev-biz@qmit.kr
+roleRef:
+  kind: ClusterRole
+  name: edit
+  apiGroup: rbac.authorization.k8s.io
+---
+
+# Backend/Utility team
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: util
+  labels:
+    parent: backend
+---
+kind: RoleBinding
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: edit-binding
+  namespace: util
+subjects:
+  #  - kind: User
+  #    name: dw.kim@qmit.kr
+  - kind: Group
+    name: dev-util@qmit.kr
+roleRef:
+  kind: ClusterRole
+  name: edit
+  apiGroup: rbac.authorization.k8s.io
+---
+
+# Backend/Data team
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: data
+  labels:
+    parent: backend
+---
+kind: RoleBinding
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: edit-binding
+  namespace: data
+subjects:
+  - kind: Group
+    name: dev-data@qmit.kr
+roleRef:
+  kind: ClusterRole
+  name: edit
+  apiGroup: rbac.authorization.k8s.io
+---
+
+# Client/Web|Mobile team
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: client
+  labels:
+    parent: none
+---
+kind: RoleBinding
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: edit-binding
+  namespace: client
+subjects:
+  - kind: Group
+    name: dev-web@qmit.kr
+  - kind: Group
+    name: dev-mobile@qmit.kr
+roleRef:
+  kind: ClusterRole
+  name: edit
+  apiGroup: rbac.authorization.k8s.io

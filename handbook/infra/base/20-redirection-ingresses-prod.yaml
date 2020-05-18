@@ -1,0 +1,23 @@
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  annotations:
+    cert-manager.io/cluster-issuer: letsencrypt-prod
+    nginx.ingress.kubernetes.io/permanent-redirect: https://medium.com/@qmit
+  labels:
+    app: blog-redirection
+  name: blog-redirection
+  namespace: default
+spec:
+  rules:
+    - host: blog.qmit.pro
+      http:
+        paths:
+          - backend:
+              serviceName: default-backend
+              servicePort: 80
+            path: /
+  tls:
+    - hosts:
+        - blog.qmit.pro
+      secretName: blog-qmit-pro-cert
