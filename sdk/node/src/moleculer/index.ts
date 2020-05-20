@@ -5,7 +5,7 @@ import { ServiceBroker, BrokerOptions } from "moleculer";
 import { exec, SDKModule } from "../common";
 
 export class Moleculer extends SDKModule {
-  public installedVersion(): Promise<string | null> {
+  public getInstalledVersion(): Promise<string | null> {
     return exec("moleculer --version")
       .then(res => {
         if (res.childProcess.exitCode === 0) {
@@ -20,7 +20,7 @@ export class Moleculer extends SDKModule {
 - Install moleculer CLI by: yarn global add moleculer-cli
 `;
 
-  public createBrokerOptions(override?: Omit<BrokerOptions, "namespace"|"transporter">): BrokerOptions {
+  public createServiceBrokerOptions(override?: Omit<BrokerOptions, "namespace"|"transporter">): BrokerOptions {
     console.log(`Creating moleculer service broker options with namespace=${kleur.blue(this.context.appEnv)} ${kleur.dim("(context.appEnv)")}\n`);
     /*
      * Default Moleculer Service Broker Configuration for QMIT Inc.
@@ -28,6 +28,7 @@ export class Moleculer extends SDKModule {
     const defaults: BrokerOptions = {
       namespace: this.context.appEnv,
       // nodeID: undefined,
+      replDelimiter: `${this.context.appKubernetesClusterFullName}:${this.context.appEnv}$`,
 
       logger: true,
       // logLevel: undefined,
@@ -116,7 +117,6 @@ export class Moleculer extends SDKModule {
 
       tracing: {
         enabled: true,
-        // @ts-ignore: moleculer module type has not been updated yet
         events: true,
         stackTrace: true,
         exporter: [
@@ -155,12 +155,51 @@ export class Moleculer extends SDKModule {
     return _.defaultsDeep(override || {}, defaults);
   }
 
-  public repl() {
-    const broker = new ServiceBroker(this.createBrokerOptions({
+  public runREPL() {
+    const broker = new ServiceBroker(this.createServiceBrokerOptions({
       nodeID: `cli-${os.hostname().toLowerCase()}-${process.pid}`,
     }));
 
-    broker.start().then(() => broker.repl());
+    return broker.start().then(() => {
+      broker.repl();
+      return;
+    });
+  }
+
+  public getCurrentContext(timeout = 2000) {
+    const broker = new ServiceBroker(this.createServiceBrokerOptions({
+      nodeID: `cli-${os.hostname().toLowerCase()}-${process.pid}-tmp`,
+      logger: false,
+    }));
+
+    const promise = broker.start()
+      .then(() => {
+        const thisNode = broker.getLocalNodeInfo();
+        return broker.call("$node.list", { onlyAvailable: true })
+          .then((nodes: any) => {
+            const localNodes = [];
+            for (const node of nodes) {
+              if (node.instanceID === thisNode.instanceID) continue;
+              if (node.ipList.every((ip: string) => thisNode.ipList.includes(ip))) {
+                localNodes.push(node);
+              }
+            }
+            return {
+              namespace: this.context.appEnv,
+              nodes: localNodes,
+            };
+          })
+          .catch(() => null)
+          .finally(() => broker.stop());
+      }, () => null);
+
+    return Promise.race([
+      new Promise(resolve => setTimeout(() => {
+        console.log(kleur.dim(`Timeout for getting moleculer context: ${timeout}ms`));
+        resolve(null);
+      }, timeout)),
+      promise,
+    ])
   }
 }
 
@@ -168,8 +207,10 @@ const singletonMoleculer = new Moleculer();
 
 // console.log(singletonMoleculer.createServiceBrokerOptions());
 //
-// singletonMoleculer.installedVersion().then(console.log);
+// singletonMoleculer.getInstalledVersion().then(console.log);
 //
-// singletonMoleculer.repl();
+// singletonMoleculer.runREPL();
+//
+// singletonMoleculer.getCurrentContext().then(console.log);
 
 export default singletonMoleculer;

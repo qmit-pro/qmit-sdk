@@ -1,0 +1,51 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.Kubectl = void 0;
+// import kleur from "kleur";
+const common_1 = require("../common");
+class Kubectl extends common_1.SDKModule {
+    constructor() {
+        super(...arguments);
+        this.minInstalledVersion = "v1.14.10";
+        this.installGuide = `
+- Install gcloud CLI from: https://cloud.google.com/sdk/install (Can install kubectl CLI together)
+- Auto-completion: kubectl completion [your shell: zsh, bash, ...]
+- Krew; kubectl plugin manager from: https://krew.sigs.k8s.io
+`;
+    }
+    getInstalledVersion() {
+        return common_1.exec("kubectl version -o json")
+            .then(res => {
+            if (res.childProcess.exitCode === 0) {
+                return `${JSON.parse(res.stdout).clientVersion.gitVersion}`;
+            }
+            else {
+                return null;
+            }
+        }, () => null);
+    }
+    async getCurrentContext() {
+        return common_1.exec(`kubectl config view -o json`)
+            .then(res => {
+            if (res.childProcess.exitCode === 0) {
+                const doc = JSON.parse(res.stdout);
+                const item = doc.contexts.find((c) => c.name === doc["current-context"]);
+                if (item) {
+                    if (!item.context.namespace) {
+                        item.context.namespace = null;
+                    }
+                    return {
+                        ...item.context,
+                    };
+                }
+            }
+            return null;
+        }, () => null);
+    }
+}
+exports.Kubectl = Kubectl;
+const singletonKubectl = new Kubectl();
+// singletonKubectl.getInstalledVersion().then(console.log);
+// singletonKubectl.getCurrentContext().then(console.log);
+exports.default = singletonKubectl;
+//# sourceMappingURL=index.js.map

@@ -18,7 +18,7 @@
     "qmit": "cli/dist/index.js"
   },
   "scripts": {
-    "dev-cli": "nodemon --config ./cli/nodemon.json",
+    "dev-cli": "ts-node ./cli/src/index.ts",
     "test-cli": "jest --detectOpenHandles --config ./cli/jest.json",
     "build-cli": "rm -rf cli/dist && tsc -p cli/tsconfig.json",
     "dev": "nodemon --config ./sdk/node/nodemon.json",
@@ -32,6 +32,7 @@
     "ioredis": "^4.17.1",
     "lodash": "^4.17.15",
     "moleculer": "^0.14.6",
+    "moleculer-repl": "^0.6.4",
     "redlock": "^4.1.0",
     "vault-sync": "1.1.10",
     "yargs": "^15.3.1"
@@ -39,15 +40,15 @@
   "devDependencies": {
     "@types/child-process-promise": "^2.2.1",
     "@types/jest": "^25.2.3",
-    "@types/lodash": "^4.14.151",
-    "@types/node": "^14.0.1",
+    "@types/lodash": "4.14.152",
+    "@types/node": "14.0.4",
     "@types/yargs": "^15.0.5",
     "jest": "^26.0.1",
     "nodemon": "^2.0.4",
     "ts-jest": "^26.0.0",
     "ts-node": "^8.10.1",
     "tslint": "^6.1.2",
-    "typescript": "^3.9.2",
+    "typescript": "3.9.3",
     "yarn-check": "^0.0.3"
   },
   "engines": {

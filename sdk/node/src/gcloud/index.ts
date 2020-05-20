@@ -1,16 +1,8 @@
 import kleur from "kleur";
 import { exec, SDKModule } from "../common";
 
-const GCP_PROJECT_ID = "qmit-pro";
-const GKE_CLUSTER_ZONE_MAP = {
-  dev: "asia-northeast1-a",
-  internal: "asia-northeast1-a",
-  prod: "asia-northeast1-a",
-};
-const GCP_REDIS_REGION = "asia-northeast1";
-
 export class GoogleCloud extends SDKModule {
-  public installedVersion(): Promise<string | null> {
+  public getInstalledVersion(): Promise<string | null> {
     return exec("gcloud --version")
       .then(res => {
         if (res.childProcess.exitCode === 0) {
@@ -57,7 +49,7 @@ export class GoogleCloud extends SDKModule {
   }
 
   public async listClusters() {
-    return exec(`gcloud container clusters list --project ${GCP_PROJECT_ID} --format json`)
+    return exec(`gcloud container clusters list --project ${this.context.GCP_PROJECT_ID} --format json`)
       .then(res => {
         if (res.childProcess.exitCode === 0) {
           return JSON.parse(res.stdout);
@@ -68,7 +60,7 @@ export class GoogleCloud extends SDKModule {
   }
 
   public async listSQLInstances() {
-    return exec(`gcloud sql instances list --project ${GCP_PROJECT_ID} --format json`)
+    return exec(`gcloud sql instances list --project ${this.context.GCP_PROJECT_ID} --format json`)
       .then(res => {
         if (res.childProcess.exitCode === 0) {
           return JSON.parse(res.stdout);
@@ -79,7 +71,7 @@ export class GoogleCloud extends SDKModule {
   }
 
   public async listRedisInstances() {
-    return exec(`gcloud redis instances list --project ${GCP_PROJECT_ID} --region ${GCP_REDIS_REGION} --format json`)
+    return exec(`gcloud redis instances list --project ${this.context.GCP_PROJECT_ID} --region ${this.context.GCP_REDIS_REGION} --format json`)
       .then(res => {
         if (res.childProcess.exitCode === 0) {
           return JSON.parse(res.stdout);
@@ -90,10 +82,10 @@ export class GoogleCloud extends SDKModule {
   }
 
   public async ensureClusterCredentials() {
-    const clusterName = this.context.appKubernetesCluster as keyof typeof GKE_CLUSTER_ZONE_MAP;
-    const clusterZone = GKE_CLUSTER_ZONE_MAP[clusterName];
+    const clusterName = this.context.appKubernetesCluster;
+    const clusterZone = (this.context.GKE_CLUSTER_ZONE_MAP as any)[clusterName];
     console.log(`Fetching GKE cluster credentials for cluster=${kleur.blue(clusterName)} ${kleur.dim("(context.appKubernetesCluster)")}\n`);
-    return exec(`gcloud container clusters get-credentials --project ${GCP_PROJECT_ID} --zone ${clusterZone} ${clusterName}`)
+    return exec(`gcloud container clusters get-credentials --project ${this.context.GCP_PROJECT_ID} --zone ${clusterZone} ${clusterName}`)
       .then(res => {
         if (res.childProcess.exitCode === 0) {
           console.log(kleur.dim(res.stderr));
@@ -107,7 +99,7 @@ export class GoogleCloud extends SDKModule {
 
 const singletonGoogleCloud = new GoogleCloud();
 
-// singletonGoogleCloud.installedVersion().then(console.log);
+// singletonGoogleCloud.getInstalledVersion().then(console.log);
 //
 // singletonGoogleCloud.login().then(console.log);
 //
