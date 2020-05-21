@@ -10,12 +10,23 @@ export class GoogleCloud extends SDKModule {
         } else {
           return null;
         }
-      }, () => null);
+      })
+      .catch(err => {
+        this.context.logger.error(err);
+        return null;
+      });
   }
   public readonly minInstalledVersion = "v292.0.0";
-  public readonly installGuide = `
-- Install gcloud CLI from: https://cloud.google.com/sdk/install (Can install kubectl CLI together)
+  public readonly installGuide = `- Install gcloud CLI from: https://cloud.google.com/sdk/install (Can install kubectl CLI together)
+- Add "export PROJECT_ID=qmit-pro" into your login shell script for easy use of manual "gcloud" command.
 `;
+
+  constructor() {
+    super();
+    this.context.addContextChangeListener(async () => {
+      await this.ensureClusterCredentials();
+    });
+  }
 
   public async login() {
     return exec(`gcloud auth login`)
@@ -41,11 +52,15 @@ export class GoogleCloud extends SDKModule {
               return {
                 account: res.stdout.trim(),
               };
-            }, () => null);
+            });
         }
 
         return null;
-      }, () => null);
+      })
+      .catch(err => {
+        this.context.logger.error(err);
+        return null;
+      });
   }
 
   public async listClusters() {
@@ -56,6 +71,10 @@ export class GoogleCloud extends SDKModule {
         }
 
         throw res.stderr;
+      })
+      .catch(err => {
+        this.context.logger.error(err);
+        return [];
       });
   }
 
@@ -67,6 +86,10 @@ export class GoogleCloud extends SDKModule {
         }
 
         throw res.stderr;
+      })
+      .catch(err => {
+        this.context.logger.error(err);
+        return [];
       });
   }
 
@@ -78,17 +101,21 @@ export class GoogleCloud extends SDKModule {
         }
 
         throw res.stderr;
+      })
+      .catch(err => {
+        this.context.logger.error(err);
+        return [];
       });
   }
 
   public async ensureClusterCredentials() {
-    const clusterName = this.context.appKubernetesCluster;
-    const clusterZone = (this.context.GKE_CLUSTER_ZONE_MAP as any)[clusterName];
-    console.log(`Fetching GKE cluster credentials for cluster=${kleur.blue(clusterName)} ${kleur.dim("(context.appKubernetesCluster)")}\n`);
+    const clusterName = this.context.clusterName;
+    const clusterZone = this.context.clusterZone;
+    this.context.logger.log(`Fetching GKE cluster credentials for cluster=${kleur.blue(clusterName)} ${kleur.dim("(context.clusterAlias)")}\n`);
     return exec(`gcloud container clusters get-credentials --project ${this.context.GCP_PROJECT_ID} --zone ${clusterZone} ${clusterName}`)
       .then(res => {
         if (res.childProcess.exitCode === 0) {
-          console.log(kleur.dim(res.stderr));
+          this.context.logger.error(kleur.dim(res.stderr));
           return { cluster: clusterName, zone: clusterZone };
         }
 

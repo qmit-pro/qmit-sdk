@@ -7,16 +7,19 @@ export class Vault extends SDKModule {
     return exec(`vault --version`)
       .then(res => {
         if (res.childProcess.exitCode === 0) {
-          return `${res.stdout.split("Vault ")[1]}`.trim();
+          return `${res.stdout.split("Vault ")[1].split(" ")[0]}`.trim();
         } else {
           return null;
         }
-      }, () => null);
+      })
+      .catch(err => {
+        this.context.logger.error(err);
+        return null;
+      });
   }
   public readonly minInstalledVersion = "v1.4.1";
-  public readonly installGuide = `
-- Install vault CLI from https://www.vaultproject.io/downloads or brew install vault for macOS
-- Add "export VAULT_ADDR=https://vault.internal.qmit.pro" into your login shell script for easy use of "vault" command.
+  public readonly installGuide = `- Install vault CLI from https://www.vaultproject.io/downloads or "brew install vault" for macOS
+- Add "export VAULT_ADDR=https://vault.internal.qmit.pro" into your login shell script for easy use of manual "vault" command.
 `;
 
   public login() {
@@ -38,9 +41,14 @@ export class Vault extends SDKModule {
         } else {
           throw res.stderr;
         }
+      })
+      .catch(err => {
+        this.context.logger.error(err);
+        return null;
       });
   }
 
+  // Use this API for fetch secrets in application
   public fetch<T = any>(factory: VaultReaderFactory<T>) {
     return vaultSync(factory, {
       // vault connection setting
@@ -48,13 +56,18 @@ export class Vault extends SDKModule {
       debug: false,
 
       // alternative auth method for kubernetes pod
-      method: `k8s/${this.context.appKubernetesCluster}`,
+      method: `k8s/${this.context.clusterName}`,
       role: "default",
     });
   }
 
   public openWebInterface() {
-    return exec(`open ${this.context.VAULT_ADDRESS}/ui/vault/auth?with=oidc`).then(() => undefined);
+    return exec(`open ${this.context.VAULT_ADDRESS}/ui/vault/auth?with=oidc`)
+      .then(() => undefined)
+      .catch(err => {
+        this.context.logger.error(err);
+        return null;
+      });
   }
 }
 

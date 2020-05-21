@@ -79,7 +79,7 @@ class GoogleCloud extends common_1.SDKModule {
     async ensureClusterCredentials() {
         const clusterName = this.context.appKubernetesCluster;
         const clusterZone = this.context.GKE_CLUSTER_ZONE_MAP[clusterName];
-        console.log(`Fetching GKE cluster credentials for cluster=${kleur_1.default.blue(clusterName)} ${kleur_1.default.dim("(context.appKubernetesCluster)")}\n`);
+        console.log(`Fetching GKE cluster credentials for cluster=${kleur_1.default.blue(clusterName)} ${kleur_1.default.dim("(context.clusterAlias)")}\n`);
         return common_1.exec(`gcloud container clusters get-credentials --project ${this.context.GCP_PROJECT_ID} --zone ${clusterZone} ${clusterName}`)
             .then(res => {
             if (res.childProcess.exitCode === 0) {

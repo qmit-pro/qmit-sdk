@@ -10,11 +10,14 @@ export class Kubectl extends SDKModule {
         } else {
           return null;
         }
-      }, () => null);
+      })
+      .catch(err => {
+        this.context.logger.error(err);
+        return null;
+      });
   }
   public readonly minInstalledVersion = "v1.14.10";
-  public readonly installGuide = `
-- Install gcloud CLI from: https://cloud.google.com/sdk/install (Can install kubectl CLI together)
+  public readonly installGuide = `- Install gcloud CLI from: https://cloud.google.com/sdk/install (Can install kubectl CLI together)
 - Auto-completion: kubectl completion [your shell: zsh, bash, ...]
 - Krew; kubectl plugin manager from: https://krew.sigs.k8s.io
 `;
@@ -36,7 +39,11 @@ export class Kubectl extends SDKModule {
         }
 
         return null;
-      }, () => null);
+      })
+      .catch(err => {
+        this.context.logger.error(err);
+        return null;
+      });
   }
 }
 

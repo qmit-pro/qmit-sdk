@@ -11,16 +11,14 @@
   "license": "private",
   "private": true,
   "files": [
-    "cli/dist",
+    "bin",
     "sdk/node/dist"
   ],
   "bin": {
-    "qmit": "cli/dist/index.js"
+    "qmit": "bin/qmit.js"
   },
   "scripts": {
-    "dev-cli": "ts-node ./cli/src/index.ts",
-    "test-cli": "jest --detectOpenHandles --config ./cli/jest.json",
-    "build-cli": "rm -rf cli/dist && tsc -p cli/tsconfig.json",
+    "dev-cli": "ts-node ./sdk/node/src/cli",
     "dev": "nodemon --config ./sdk/node/nodemon.json",
     "test": "jest --detectOpenHandles --config ./sdk/node/jest.json",
     "build": "rm -rf sdk/node/dist && tsc -p sdk/node/tsconfig.json",
@@ -42,6 +40,7 @@
     "@types/jest": "^25.2.3",
     "@types/lodash": "4.14.152",
     "@types/node": "14.0.4",
+    "@types/table": "^5.0.0",
     "@types/yargs": "^15.0.5",
     "jest": "^26.0.1",
     "nodemon": "^2.0.4",

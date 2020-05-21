@@ -34,7 +34,7 @@ class Context {
         console.log(`QMIT SDK Context created...\n`);
     }
     get appKubernetesClusterFullName() {
-        return this.getKubernetesClusterFullName(this.appKubernetesCluster);
+        return this.getKubernetesClusterFullName(this.clusterAlias);
     }
     ;
     getKubernetesClusterFullName(alias) {
@@ -45,8 +45,8 @@ class Context {
         console.log(`Set context.appEnv=${kleur_1.default.blue(`${this.appEnv}`)}`);
     }
     setAppKubernetesCluster(appKubernetesCluster) {
-        this.appKubernetesCluster = appKubernetesCluster;
-        console.log(`Set context.appKubernetesCluster=${kleur_1.default.blue(`${this.appKubernetesCluster}`)}`);
+        this.clusterAlias = appKubernetesCluster;
+        console.log(`Set context.appKubernetesCluster=${kleur_1.default.blue(`${this.clusterAlias}`)}`);
     }
 }
 exports.Context = Context;

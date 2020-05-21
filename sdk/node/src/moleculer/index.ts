@@ -13,22 +13,26 @@ export class Moleculer extends SDKModule {
         } else {
           return null;
         }
-      }, () => null);
+      })
+      .catch(err => {
+        this.context.logger.error(err);
+        return null;
+      });
   }
   public readonly minInstalledVersion = "v0.7.1";
-  public readonly installGuide = `
-- Install moleculer CLI by: yarn global add moleculer-cli
+  public readonly installGuide = `- (optional) Install moleculer CLI by: yarn global add moleculer-cli
 `;
 
-  public createServiceBrokerOptions(override?: Omit<BrokerOptions, "namespace"|"transporter">): BrokerOptions {
-    console.log(`Creating moleculer service broker options with namespace=${kleur.blue(this.context.appEnv)} ${kleur.dim("(context.appEnv)")}\n`);
+  public createServiceBrokerOptions(override?: Omit<BrokerOptions, "namespace"|"transporter">, options: { quiet?: boolean } = {}): BrokerOptions {
+    this.context.logger[options.quiet ? "debug" : "log"](`Creating moleculer service broker options with namespace=${kleur.blue(this.context.appEnv)} ${kleur.dim("(context.appEnv)")}\n`);
+
     /*
      * Default Moleculer Service Broker Configuration for QMIT Inc.
      */
     const defaults: BrokerOptions = {
       namespace: this.context.appEnv,
       // nodeID: undefined,
-      replDelimiter: `${this.context.appKubernetesClusterFullName}:${this.context.appEnv}$`,
+      replDelimiter: `${this.context.appEnv}:${this.context.clusterFullName}$`,
 
       logger: true,
       // logLevel: undefined,
@@ -170,6 +174,8 @@ export class Moleculer extends SDKModule {
     const broker = new ServiceBroker(this.createServiceBrokerOptions({
       nodeID: `cli-${os.hostname().toLowerCase()}-${process.pid}-tmp`,
       logger: false,
+    }, {
+      quiet: true,
     }));
 
     const promise = broker.start()
@@ -179,7 +185,7 @@ export class Moleculer extends SDKModule {
           .then((nodes: any) => {
             const localNodes = [];
             for (const node of nodes) {
-              if (node.instanceID === thisNode.instanceID) continue;
+              if (node.instanceID === thisNode.instanceID || node.id.endsWith("-tmp")) continue;
               if (node.ipList.every((ip: string) => thisNode.ipList.includes(ip))) {
                 localNodes.push(node);
               }
@@ -195,7 +201,7 @@ export class Moleculer extends SDKModule {
 
     return Promise.race([
       new Promise(resolve => setTimeout(() => {
-        console.log(kleur.dim(`Timeout for getting moleculer context: ${timeout}ms`));
+        this.context.logger.debug(kleur.dim(`Timeout for getting moleculer context in ${timeout}ms`));
         resolve(null);
       }, timeout)),
       promise,

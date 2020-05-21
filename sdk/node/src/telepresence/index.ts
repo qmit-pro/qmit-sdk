@@ -15,8 +15,7 @@ export class Telepresence extends SDKModule {
       }, () => null);
   }
   public readonly minInstalledVersion = "v0.105";
-  public readonly installGuide = `
-- Install telepresence CLI from: https://www.telepresence.io (brew install telepresence for macOS)
+  public readonly installGuide = `- Install telepresence CLI from: https://www.telepresence.io (brew install telepresence for macOS)
 `;
 
   public async getCurrentContext() {
@@ -37,7 +36,7 @@ export class Telepresence extends SDKModule {
           }
         } catch (err) {
           // remove dead telepresence session garbage
-          console.log(kleur.dim(`Deleting dead telepresence session: ${kleur.red(sid)}`));
+          this.context.logger.log(kleur.dim(`Deleting dead telepresence session: ${kleur.red(sid)}`));
           fs.rmdirSync(path.join(tmpPath, filePath), { recursive: true });
         }
       } catch {
@@ -66,6 +65,10 @@ export class Telepresence extends SDKModule {
           sessionId,
           deployment: null,
         };
+      })
+      .catch(err => {
+        this.context.logger.error(err);
+        return null;
       });
   }
 
