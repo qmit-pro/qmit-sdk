@@ -5,6 +5,7 @@ const command: yargs.CommandModule = {
   describe: `Invoke login process.`,
   handler(args) {
     console.log(args);
+    // TODO: implement
   },
   builder(y) {
     const services = ["vault", "gcloud", "kubectl"];

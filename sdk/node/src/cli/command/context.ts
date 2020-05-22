@@ -87,7 +87,7 @@ const command: yargs.CommandModule = {
         `vault`,
         (loginStatus => {
           if (!loginStatus) return "-";
-          return `email: ${kleur.blue(loginStatus.meta.email)}\nname: ${loginStatus.meta.name}\nrole: ${loginStatus.meta.role}\npolicies: ${kleur.blue(loginStatus.identity_policies.join(", "))}\ntoken: ${loginStatus.id}\nexpires at: ${loginStatus.expire_time.split(".")[0]}Z\nissued at: ${loginStatus.issue_time.split(".")[0]}Z`;
+          return `email: ${kleur.blue(loginStatus.meta.email)}\nname: ${loginStatus.meta.name}\nrole: ${loginStatus.meta.role}\npolicies: ${kleur.blue(loginStatus.identity_policies.join(", "))}`;
         })(data.vault.loginStatus),
         (installedVersion => {
           return installedVersion ? `${installedVersion}${kleur.dim(`/${vault.minInstalledVersion}`)}` : `-${kleur.dim(`/${vault.minInstalledVersion}`)}\n\n${kleur.dim(vault.installGuide)}`;
@@ -155,7 +155,7 @@ const command: yargs.CommandModule = {
         `kubectl`,
         (ctx => {
           if (!ctx) return "-";
-          return `cluster: ${(ctx.cluster === context.clusterFullName ? kleur.blue : kleur.red)(ctx.cluster)}\nuser: ${ctx.user}\nnamespace: ${ctx.namespace || kleur.dim("default")}`;
+          return `cluster: ${(ctx.cluster === context.clusterFullName ? kleur.blue : kleur.red)(ctx.cluster)}\nuser: ${(ctx.user === context.clusterFullName ? kleur.blue : kleur.red)(ctx.user)}\nnamespace: ${ctx.namespace || kleur.dim("default")}`;
         })(data.kubectl.currentContext),
         (installedVersion => {
           return installedVersion ? `${installedVersion}${kleur.dim(`/${kubectl.minInstalledVersion}`)}` : `-${kleur.dim(`/${kubectl.minInstalledVersion}`)}\n\n${kleur.dim(kubectl.installGuide)}`;
@@ -194,7 +194,7 @@ const command: yargs.CommandModule = {
     }
 
     // print
-    context.logger.log(`${table(tableRows, {
+    context.logger.log(`=== QMIT CLI Context ===\n${table(tableRows, {
       columnDefault: {
         alignment: "left",
       },

@@ -111,7 +111,7 @@ export class GoogleCloud extends SDKModule {
   public async ensureClusterCredentials() {
     const clusterName = this.context.clusterName;
     const clusterZone = this.context.clusterZone;
-    this.context.logger.log(`Fetching GKE cluster credentials for cluster=${kleur.blue(clusterName)} ${kleur.dim("(context.clusterAlias)")}\n`);
+    this.context.logger.log(`Fetching GKE cluster credentials for cluster=${kleur.blue(clusterName)} ${kleur.dim("(context.clusterName)")}\n`);
     return exec(`gcloud container clusters get-credentials --project ${this.context.GCP_PROJECT_ID} --zone ${clusterZone} ${clusterName}`)
       .then(res => {
         if (res.childProcess.exitCode === 0) {

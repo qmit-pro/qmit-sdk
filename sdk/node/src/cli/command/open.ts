@@ -5,6 +5,7 @@ const command: yargs.CommandModule = {
   describe: `List or open public service endpoints.`,
   handler(args) {
     console.log(args);
+    // TODO: implement (with recommendation)
   },
   builder(y) {
     return y

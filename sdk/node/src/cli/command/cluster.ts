@@ -1,14 +1,16 @@
 import kleur from "kleur";
 import yargs from "yargs";
-import { gcloud, telepresence } from "../../";
+import { context, gcloud, telepresence } from "../../";
 
 const describe = `Create a VPN-tunnel with current cluster-alias context. It will invoke telepresence command to establish a VPN-tunnel with cluster.\nIt runs: ${kleur.dim(`telepresence --also-proxy ... [options..]`)}`;
 
 const command: yargs.CommandModule = {
   command: `cluster [options..]`,
   describe,
-  handler(args) {
-    console.log(args);
+  async handler(args) {
+    const result = await gcloud.ensureClusterCredentials();
+    context.logger.log(`Connecting to cluster ${kleur.blue(result.cluster)} ${kleur.dim(`(${result.zone})`)}`);
+    return telepresence.runCommand(args.options as string);
   },
   builder(y) {
     const prefix = `$0 cluster`;

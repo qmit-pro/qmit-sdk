@@ -36,8 +36,9 @@ export class Telepresence extends SDKModule {
           }
         } catch (err) {
           // remove dead telepresence session garbage
-          this.context.logger.log(kleur.dim(`Deleting dead telepresence session: ${kleur.red(sid)}`));
-          fs.rmdirSync(path.join(tmpPath, filePath), { recursive: true });
+          // TODO: fix this logic
+          // this.context.logger.log(kleur.dim(`Deleting dead telepresence session: ${kleur.red(sid)}`));
+          // fs.rmdirSync(path.join(tmpPath, filePath), { recursive: true });
         }
       } catch {
       }
@@ -82,7 +83,7 @@ export class Telepresence extends SDKModule {
 
     const { childProcess } = await spawn(
       `telepresence`,
-      `--logfile - --also-proxy ${this.context.GCP_VPN_CIRD} ${args}`.split(" ").map(arg => arg.trim()).filter(arg => !!arg),
+      `--also-proxy ${this.context.GCP_VPN_CIRD} ${args}`.split(" ").map(arg => arg.trim()).filter(arg => !!arg),
       {
         detached: false,
         shell: false,
