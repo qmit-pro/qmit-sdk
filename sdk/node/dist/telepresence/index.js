@@ -2,7 +2,6 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Telepresence = void 0;
 const tslib_1 = require("tslib");
-const kleur_1 = tslib_1.__importDefault(require("kleur"));
 const path_1 = tslib_1.__importDefault(require("path"));
 const fs_1 = tslib_1.__importDefault(require("fs"));
 const common_1 = require("../common");
@@ -10,8 +9,7 @@ class Telepresence extends common_1.SDKModule {
     constructor() {
         super(...arguments);
         this.minInstalledVersion = "v0.105";
-        this.installGuide = `
-- Install telepresence CLI from: https://www.telepresence.io (brew install telepresence for macOS)
+        this.installGuide = `- Install telepresence CLI from: https://www.telepresence.io or "brew install telepresence" for macOS
 `;
     }
     getInstalledVersion() {
@@ -46,8 +44,9 @@ class Telepresence extends common_1.SDKModule {
                 }
                 catch (err) {
                     // remove dead telepresence session garbage
-                    console.log(kleur_1.default.dim(`Deleting dead telepresence session: ${kleur_1.default.red(sid)}`));
-                    fs_1.default.rmdirSync(path_1.default.join(tmpPath, filePath), { recursive: true });
+                    // TODO: fix this logic
+                    // this.context.logger.log(kleur.dim(`Deleting dead telepresence session: ${kleur.red(sid)}`));
+                    // fs.rmdirSync(path.join(tmpPath, filePath), { recursive: true });
                 }
             }
             catch {
@@ -72,6 +71,10 @@ class Telepresence extends common_1.SDKModule {
                 sessionId,
                 deployment: null,
             };
+        })
+            .catch(err => {
+            this.context.logger.error(err);
+            return null;
         });
     }
     async runCommand(args = "") {
@@ -81,7 +84,7 @@ class Telepresence extends common_1.SDKModule {
             err.data = oldSession;
             throw err;
         }
-        const { childProcess } = await common_1.spawn(`telepresence`, `--logfile - --also-proxy ${this.context.GCP_VPN_CIRD} ${args}`.split(" ").map(arg => arg.trim()).filter(arg => !!arg), {
+        const { childProcess } = await common_1.spawn(`telepresence`, `--also-proxy ${this.context.GCP_VPN_CIRD} ${args}`.split(" ").map(arg => arg.trim()).filter(arg => !!arg), {
             detached: false,
             shell: false,
             stdio: [process.stdin, process.stdout, process.stderr],

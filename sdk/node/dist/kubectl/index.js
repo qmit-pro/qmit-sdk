@@ -7,10 +7,9 @@ class Kubectl extends common_1.SDKModule {
     constructor() {
         super(...arguments);
         this.minInstalledVersion = "v1.14.10";
-        this.installGuide = `
-- Install gcloud CLI from: https://cloud.google.com/sdk/install (Can install kubectl CLI together)
-- Auto-completion: kubectl completion [your shell: zsh, bash, ...]
-- Krew; kubectl plugin manager from: https://krew.sigs.k8s.io
+        this.installGuide = `- Install gcloud CLI from: https://cloud.google.com/sdk/install (Can install kubectl CLI together)
+- Can enable auto-completion by: "kubectl completion <zsh, bash, ...>"
+- Can install krew; kubectl plugin manager from: https://krew.sigs.k8s.io
 `;
     }
     getInstalledVersion() {
@@ -22,7 +21,11 @@ class Kubectl extends common_1.SDKModule {
             else {
                 return null;
             }
-        }, () => null);
+        })
+            .catch(err => {
+            this.context.logger.error(err);
+            return null;
+        });
     }
     async getCurrentContext() {
         return common_1.exec(`kubectl config view -o json`)
@@ -40,7 +43,11 @@ class Kubectl extends common_1.SDKModule {
                 }
             }
             return null;
-        }, () => null);
+        })
+            .catch(err => {
+            this.context.logger.error(err);
+            return null;
+        });
     }
 }
 exports.Kubectl = Kubectl;

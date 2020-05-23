@@ -11,8 +11,7 @@ class Moleculer extends common_1.SDKModule {
     constructor() {
         super(...arguments);
         this.minInstalledVersion = "v0.7.1";
-        this.installGuide = `
-- Install moleculer CLI by: yarn global add moleculer-cli
+        this.installGuide = `- (optional) Install moleculer CLI by: "yarn global add moleculer-cli"
 `;
     }
     getInstalledVersion() {
@@ -24,17 +23,21 @@ class Moleculer extends common_1.SDKModule {
             else {
                 return null;
             }
-        }, () => null);
+        })
+            .catch(err => {
+            this.context.logger.error(err);
+            return null;
+        });
     }
-    createServiceBrokerOptions(override) {
-        console.log(`Creating moleculer service broker options with namespace=${kleur_1.default.blue(this.context.appEnv)} ${kleur_1.default.dim("(context.appEnv)")}\n`);
+    createServiceBrokerOptions(override, options = {}) {
+        this.context.logger[options.quiet ? "debug" : "log"](`Creating moleculer service broker options with namespace=${kleur_1.default.blue(this.context.appEnv)} ${kleur_1.default.dim("(context.appEnv)")}\n`);
         /*
          * Default Moleculer Service Broker Configuration for QMIT Inc.
          */
         const defaults = {
             namespace: this.context.appEnv,
             // nodeID: undefined,
-            replDelimiter: `${this.context.appKubernetesClusterFullName}:${this.context.appEnv}$`,
+            replDelimiter: `${this.context.appEnv}:${this.context.clusterFullName}$`,
             logger: true,
             // logLevel: undefined,
             // logFormatter: "default",
@@ -142,10 +145,12 @@ class Moleculer extends common_1.SDKModule {
             return;
         });
     }
-    getCurrentContext(timeout = 2000) {
+    getCurrentContext(timeout = 2500) {
         const broker = new moleculer_1.ServiceBroker(this.createServiceBrokerOptions({
             nodeID: `cli-${os_1.default.hostname().toLowerCase()}-${process.pid}-tmp`,
             logger: false,
+        }, {
+            quiet: true,
         }));
         const promise = broker.start()
             .then(() => {
@@ -154,8 +159,9 @@ class Moleculer extends common_1.SDKModule {
                 .then((nodes) => {
                 const localNodes = [];
                 for (const node of nodes) {
-                    if (node.instanceID === thisNode.instanceID)
+                    if (node.instanceID === thisNode.instanceID || node.id.endsWith("-tmp")) {
                         continue;
+                    }
                     if (node.ipList.every((ip) => thisNode.ipList.includes(ip))) {
                         localNodes.push(node);
                     }
@@ -165,16 +171,16 @@ class Moleculer extends common_1.SDKModule {
                     nodes: localNodes,
                 };
             })
-                .catch(() => null)
-                .finally(() => broker.stop());
+                .catch(() => null);
         }, () => null);
         return Promise.race([
             new Promise(resolve => setTimeout(() => {
-                console.log(kleur_1.default.dim(`Timeout for getting moleculer context: ${timeout}ms`));
+                this.context.logger.debug(kleur_1.default.dim(`Timeout for getting moleculer context in ${timeout}ms`));
                 resolve(null);
             }, timeout)),
             promise,
-        ]);
+        ])
+            .finally(() => broker.stop());
     }
 }
 exports.Moleculer = Moleculer;

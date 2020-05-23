@@ -8,21 +8,26 @@ class Vault extends common_1.SDKModule {
     constructor() {
         super(...arguments);
         this.minInstalledVersion = "v1.4.1";
-        this.installGuide = `
-- Install vault CLI from https://www.vaultproject.io/downloads or brew install vault for macOS
-- Add "export VAULT_ADDR=https://vault.internal.qmit.pro" into your login shell script for easy use of "vault" command.
+        this.installGuide = `- Install vault CLI from https://www.vaultproject.io/downloads or "brew install vault" for macOS
+- Add "export VAULT_ADDR=https://vault.internal.qmit.pro" into your login shell script for easy use of manual "vault" command.
+- And ask an infrastructure manager to grant Vault permission to your G-suite account.
 `;
+        this.webInterfaceURL = `${this.context.VAULT_ADDRESS}/ui/vault/auth?with=oidc`;
     }
     async getInstalledVersion() {
         return common_1.exec(`vault --version`)
             .then(res => {
             if (res.childProcess.exitCode === 0) {
-                return `${res.stdout.split("Vault ")[1]}`.trim();
+                return `${res.stdout.split("Vault ")[1].split(" ")[0]}`.trim();
             }
             else {
                 return null;
             }
-        }, () => null);
+        })
+            .catch(err => {
+            this.context.logger.error(err);
+            return null;
+        });
     }
     login() {
         return common_1.exec(`vault login -address=${this.context.VAULT_ADDRESS} -method=oidc`)
@@ -44,20 +49,22 @@ class Vault extends common_1.SDKModule {
             else {
                 throw res.stderr;
             }
+        })
+            .catch(err => {
+            this.context.logger.error(err);
+            return null;
         });
     }
+    // Use this API for fetch secrets in application
     fetch(factory) {
         return vault_sync_1.default(factory, {
             // vault connection setting
             uri: this.context.VAULT_ADDRESS,
             debug: false,
             // alternative auth method for kubernetes pod
-            method: `k8s/${this.context.appKubernetesCluster}`,
+            method: `k8s/${this.context.clusterName}`,
             role: "default",
         });
-    }
-    openWebInterface() {
-        return common_1.exec(`open ${this.context.VAULT_ADDRESS}/ui/vault/auth?with=oidc`).then(() => undefined);
     }
 }
 exports.Vault = Vault;

@@ -1,7 +1,9 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.moleculer = exports.telepresence = exports.kubectl = exports.gcloud = exports.vault = void 0;
+exports.moleculer = exports.telepresence = exports.kubectl = exports.gcloud = exports.vault = exports.context = void 0;
 const tslib_1 = require("tslib");
+const context_1 = tslib_1.__importDefault(require("./common/context"));
+exports.context = context_1.default;
 const vault_1 = tslib_1.__importDefault(require("./vault"));
 exports.vault = vault_1.default;
 const gcloud_1 = tslib_1.__importDefault(require("./gcloud"));
