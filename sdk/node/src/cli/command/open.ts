@@ -6,7 +6,7 @@ import { open } from "../../common";
 
 const command: yargs.CommandModule = {
   command: `open [services..]`,
-  describe: `List or open public service endpoints. Service information are derived from ${kleur.dim(`vault:common/show/services`)}`,
+  describe: `List or open public service endpoints. Service information are derived from ${kleur.dim(`vault: /data/common/services`)}`,
   async handler(args) {
     const serviceOptions = args.services as string[];
 

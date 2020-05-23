@@ -4570,6 +4570,24 @@ qmit-sdk@^1.0.0:
     wtfnode "^0.8.1"
     yargs "^15.3.1"
 
+qmit-sdk@^1.0.2:
+  version "1.0.2"
+  resolved "https://registry.yarnpkg.com/qmit-sdk/-/qmit-sdk-1.0.2.tgz#a92db2637b927a04f69777bcfd19cfca1576a0c7"
+  integrity sha512-PMqxxuSDNcuVv9uaJHzhEB+qCaDE0a+vhc0ARJevY8OvkiLxGpch6pSsXcIYgL9UaM8sLB3dxhwAdY1bZNyqdQ==
+  dependencies:
+    child-process-promise "^2.2.1"
+    global "^4.4.0"
+    ioredis "^4.17.1"
+    lodash "^4.17.15"
+    moleculer "^0.14.6"
+    moleculer-repl "^0.6.4"
+    open "^7.0.4"
+    qmit-sdk "^1.0.0"
+    redlock "^4.1.0"
+    vault-sync "1.1.10"
+    wtfnode "^0.8.1"
+    yargs "^15.3.1"
+
 qs@~6.5.2:
   version "6.5.2"
   resolved "https://registry.yarnpkg.com/qs/-/qs-6.5.2.tgz#cb3ae806e8740444584ef154ce8ee98d403f3e36"

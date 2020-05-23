@@ -1,6 +1,6 @@
 {
   "name": "qmit-sdk",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "QMIT development SDK and CLI",
   "main": "sdk/node/dist/index.js",
   "repository": {
@@ -32,7 +32,7 @@
     "moleculer": "^0.14.6",
     "moleculer-repl": "^0.6.4",
     "open": "^7.0.4",
-    "qmit-sdk": "^1.0.0",
+    "qmit-sdk": "^1.0.2",
     "redlock": "^4.1.0",
     "vault-sync": "1.1.10",
     "wtfnode": "^0.8.1",

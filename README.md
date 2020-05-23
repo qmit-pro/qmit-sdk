@@ -27,8 +27,8 @@ Commands:
                              established before.
                              It runs: moleculer connect redis://....
   qmit open [services..]     List or open public service endpoints. Service
-                             information are derived from
-                             vault:common/show/services
+                             information are derived from vault:
+                             /data/common/services
 
 Options:
   --help     Show help                                                 [boolean]
