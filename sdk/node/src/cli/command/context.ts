@@ -3,12 +3,27 @@ import yargs from "yargs";
 import { table } from "table";
 import { context, vault, gcloud, kubectl, telepresence, moleculer } from "../../";
 
-const services = ["vault", "gcloud", "kubectl", "telepresence", "moleculer"];
+const services = {
+  vault,
+  gcloud,
+  kubectl,
+  telepresence,
+  moleculer,
+};
 
 const command: yargs.CommandModule = {
   command: `context [services..]`,
+  aliases: "ctx",
   describe: `Configure or show current context.`,
   async handler(args) {
+    // just print install guides
+    if (args.installGuide) {
+      for (const [serviceName, service] of Object.entries(services)) {
+        context.logger.log(`=== Install ${serviceName} CLI ===\n${service.installGuide}\n`);
+      }
+      return;
+    }
+
     // set context if has optional args
     if (args.appEnv || args.clusterName) {
       context.setContext({ appEnv: args.appEnv as any, clusterName: args.clusterName as any });
@@ -17,8 +32,8 @@ const command: yargs.CommandModule = {
 
     // show context, login status and other possible information
     const serviceOptions = args.services as any;
-    const enabled = services.reduce((map, service) => {
-      map[service] = serviceOptions.length === 0 || serviceOptions.include(service);
+    const enabled = Object.keys(services).reduce((map, service) => {
+      map[service] = serviceOptions.length === 0 || serviceOptions.includes(service);
       return map;
     }, {} as {[service in string]: boolean});
 
@@ -74,10 +89,11 @@ const command: yargs.CommandModule = {
         "Installed CLI",
       ],
     ];
+    const installGuides: {[service: string]: string} = {};
 
     tableRows.push([
       `qmit`,
-      `app-env: ${kleur.blue(context.appEnv)}\ncluster-name: ${kleur.blue(context.clusterName)}\ncluster-zone: ${context.clusterZone}\nkubectl-context: ${enabled.kubectl && data.kubectl.currentContext && data.kubectl.currentContext.cluster === context.clusterFullName ? kleur.blue(context.clusterFullName) : kleur.red(context.clusterFullName)}`,
+      `app-env: ${kleur.blue(context.appEnv)}\ncluster-name: ${kleur.blue(context.clusterName)}\ncluster-zone: ${context.clusterZone}\nkubectl-context: ${context.clusterFullName}`,
       `${context.version}`,
     ]);
 
@@ -90,7 +106,10 @@ const command: yargs.CommandModule = {
           return `email: ${kleur.blue(loginStatus.meta.email)}\nname: ${loginStatus.meta.name}\nrole: ${loginStatus.meta.role}\npolicies: ${kleur.blue(loginStatus.identity_policies.join(", "))}`;
         })(data.vault.loginStatus),
         (installedVersion => {
-          return installedVersion ? `${installedVersion}${kleur.dim(`/${vault.minInstalledVersion}`)}` : `-${kleur.dim(`/${vault.minInstalledVersion}`)}\n\n${kleur.dim(vault.installGuide)}`;
+          if (!installedVersion) {
+            installGuides.vault = vault.installGuide;
+          }
+          return `${installedVersion || "-"}${kleur.dim(`/${vault.minInstalledVersion}`)}`;
         })(data.vault.installedVersion),
       ]);
     }
@@ -104,49 +123,12 @@ const command: yargs.CommandModule = {
           return `account: ${kleur.blue(loginStatus.account)}`;
         })(data.gcloud.loginStatus),
         (installedVersion => {
-          return installedVersion ? `${installedVersion}${kleur.dim(`/${gcloud.minInstalledVersion}`)}` : `-${kleur.dim(`/${gcloud.minInstalledVersion}`)}\n\n${kleur.dim(gcloud.installGuide)}`;
+          if (!installedVersion) {
+            installGuides.gcloud = gcloud.installGuide;
+          }
+          return `${installedVersion || "-"}${kleur.dim(`/${gcloud.minInstalledVersion}`)}`;
         })(data.gcloud.installedVersion),
       ]);
-
-      context.logger.log(`=== Google Cloud Resource (Project: ${kleur.blue(context.GCP_PROJECT_ID)}) ===\n${
-        table([
-          [
-            `Clusters ${kleur.dim(`(GKE; Kubernetes)`)}`,
-            `SQL Instances`,
-            `Redis Instances`,
-          ],
-          [
-            (items => {
-              if (items.length === 0) return "-";
-              return items.map((item: any) => {
-                return `name: ${item.name === context.clusterName ? kleur.blue(item.name) : item.name} ${kleur.dim(`(cluster-name)`)}\nzones: ${item.locations.join(", ")}\nnetwork: ${item.network}\ncidr: ${item.clusterIpv4Cidr}\nstate: ${item.status}\nmaster endpoint: ${item.endpoint}\nmaster version: ${item.currentMasterVersion}\nnode version: ${item.currentNodeVersion}\nnode #: ${item.currentNodeCount}`;
-              }).join("\n-----\n");
-            })(data.gcloud.clustersList),
-            (items => {
-              if (items.length === 0) return "-";
-              return items.map((item: any) => {
-                return `name: ${item.name}\nhost: ${item.ipAddresses.map((ip: any) => `${ip.ipAddress} (${ip.type})`).join(", ")}\nport: ${item.port || "-"}\nversion: ${item.databaseVersion}\nzone: ${item.gceZone}\nstate: ${item.state}\ntier: ${item.settings.tier}`;
-              }).join("\n-----\n");
-            })(data.gcloud.sqlInstancesList),
-            (items => {
-              if (items.length === 0) return "-";
-              return items.map((item: any) => {
-                return `name: ${item.displayName}\nhost: ${item.host} (${item.reservedIpRange})}\nport: ${item.port}\nversion: ${item.redisVersion}\nzone: ${item.locationId}\nstate: ${item.state}\ntier: ${item.tier}`;
-              }).join("\n-----\n");
-            })(data.gcloud.redisInstancesList),
-          ],
-        ], {
-          columnDefault: {
-            alignment: "left",
-            wrapWord: true,
-          },
-          columns: {
-            0: {width: 35},
-            1: {width: 35},
-            2: {width: 35},
-          },
-        })
-      }`);
     }
 
     // kubectl
@@ -158,7 +140,10 @@ const command: yargs.CommandModule = {
           return `cluster: ${(ctx.cluster === context.clusterFullName ? kleur.blue : kleur.red)(ctx.cluster)}\nuser: ${(ctx.user === context.clusterFullName ? kleur.blue : kleur.red)(ctx.user)}\nnamespace: ${ctx.namespace || kleur.dim("default")}`;
         })(data.kubectl.currentContext),
         (installedVersion => {
-          return installedVersion ? `${installedVersion}${kleur.dim(`/${kubectl.minInstalledVersion}`)}` : `-${kleur.dim(`/${kubectl.minInstalledVersion}`)}\n\n${kleur.dim(kubectl.installGuide)}`;
+          if (!installedVersion) {
+            installGuides.kubectl = kubectl.installGuide;
+          }
+          return `${installedVersion || "-"}${kleur.dim(`/${kubectl.minInstalledVersion}`)}`;
         })(data.kubectl.installedVersion),
       ]);
     }
@@ -172,7 +157,10 @@ const command: yargs.CommandModule = {
           return `session: ${ctx.sessionId}\ndeployment: ${kleur.blue(ctx.deployment.metadata.name)}\nnamespace: ${enabled.kubectl && data.kubectl.currentContext && ((data.kubectl.currentContext.namespace || "default") === ctx.deployment.metadata.namespace) ? kleur.blue(ctx.deployment.metadata.namespace) : ctx.deployment.metadata.namespace}\nimages: ${ctx.deployment.spec.template.spec.containers.map((c: any) => c.image).join(", ")}\ncreated at: ${ctx.deployment.metadata.creationTimestamp}`;
         })(data.telepresence.currentContext),
         (installedVersion => {
-          return installedVersion ? `${installedVersion}${kleur.dim(`/${telepresence.minInstalledVersion}`)}` : `-${kleur.dim(`/${telepresence.minInstalledVersion}`)}\n\n${kleur.dim(telepresence.installGuide)}`;
+          if (!installedVersion) {
+            installGuides.telepresence = telepresence.installGuide;
+          }
+          return `${installedVersion || "-"}${kleur.dim(`/${telepresence.minInstalledVersion}`)}`;
         })(data.telepresence.installedVersion),
       ]);
     }
@@ -188,26 +176,37 @@ const command: yargs.CommandModule = {
           }).join("-----\n")}`;
         })(data.moleculer.currentContext),
         (installedVersion => {
-          return installedVersion ? `${installedVersion}${kleur.dim(`/${moleculer.minInstalledVersion}`)}` : `-${kleur.dim(`/${moleculer.minInstalledVersion}`)}\n\n${kleur.dim(moleculer.installGuide)}`;
+          // if (!installedVersion) {
+          //   installGuides.moleculer = moleculer.installGuide;
+          // }
+          return `${installedVersion || "-"}${kleur.dim(`/${moleculer.minInstalledVersion}`)}`;
         })(data.moleculer.installedVersion),
       ]);
     }
 
-    // print
+    // print context
     context.logger.log(`=== QMIT CLI Context ===\n${table(tableRows, {
       columnDefault: {
         alignment: "left",
       },
     })}`);
 
-    // force quit
+    // print install guides
+    if (Object.keys(installGuides).length > 0) {
+      for (const [service, installGuide] of Object.entries(installGuides)) {
+        context.logger.log(`=== Install ${service} CLI ===\n${installGuide}\n`);
+      }
+    }
+
+    // force quit for the redis connection handler hanging bug from moleculer
     process.exit(0);
+    // require("wtfnode").dump();
   },
   builder(y) {
     return y
       .positional("services", {
         describe: `A list of services to show current context. Omit it to show all the information.`,
-        choices: services,
+        choices: Object.keys(services),
       })
       .options("app-env", {
         alias: "a",
@@ -218,6 +217,12 @@ const command: yargs.CommandModule = {
         alias: "c",
         describe: `Set cluster-name context ${kleur.dim(`(${context.envVarName.clusterName})`)}`,
         choices: context.clusterNames,
+      })
+      .options("install-guide", {
+        alias: "i",
+        describe: `Show prerequisite CLIs install guides.`,
+        type: "boolean",
+        conflicts: ["cluster-name", "app-env"],
       })
       .version(false);
   },

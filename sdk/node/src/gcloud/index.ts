@@ -19,6 +19,7 @@ export class GoogleCloud extends SDKModule {
   public readonly minInstalledVersion = "v292.0.0";
   public readonly installGuide = `- Install gcloud CLI from: https://cloud.google.com/sdk/install (Can install kubectl CLI together)
 - Add "export PROJECT_ID=qmit-pro" into your login shell script for easy use of manual "gcloud" command.
+- And ask an infrastructure manager to grant GKE and required resources permission to your G-suite account.
 `;
 
   constructor() {

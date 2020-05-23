@@ -9,7 +9,6 @@
   },
   "author": "QMIT Inc.",
   "license": "private",
-  "private": true,
   "files": [
     "bin",
     "sdk/node/dist"
@@ -31,8 +30,10 @@
     "lodash": "^4.17.15",
     "moleculer": "^0.14.6",
     "moleculer-repl": "^0.6.4",
+    "open": "^7.0.4",
     "redlock": "^4.1.0",
     "vault-sync": "1.1.10",
+    "wtfnode": "^0.8.1",
     "yargs": "^15.3.1"
   },
   "devDependencies": {
@@ -40,6 +41,7 @@
     "@types/jest": "^25.2.3",
     "@types/lodash": "4.14.152",
     "@types/node": "14.0.4",
+    "@types/open": "^6.2.1",
     "@types/table": "^5.0.0",
     "@types/yargs": "^15.0.5",
     "jest": "^26.0.1",

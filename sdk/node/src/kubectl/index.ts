@@ -18,8 +18,8 @@ export class Kubectl extends SDKModule {
   }
   public readonly minInstalledVersion = "v1.14.10";
   public readonly installGuide = `- Install gcloud CLI from: https://cloud.google.com/sdk/install (Can install kubectl CLI together)
-- Auto-completion: kubectl completion [your shell: zsh, bash, ...]
-- Krew; kubectl plugin manager from: https://krew.sigs.k8s.io
+- Can enable auto-completion by: "kubectl completion <zsh, bash, ...>"
+- Can install krew; kubectl plugin manager from: https://krew.sigs.k8s.io
 `;
 
   public async getCurrentContext() {

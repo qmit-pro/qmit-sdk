@@ -19,11 +19,12 @@ export class Moleculer extends SDKModule {
         return null;
       });
   }
+
   public readonly minInstalledVersion = "v0.7.1";
-  public readonly installGuide = `- (optional) Install moleculer CLI by: yarn global add moleculer-cli
+  public readonly installGuide = `- (optional) Install moleculer CLI by: "yarn global add moleculer-cli"
 `;
 
-  public createServiceBrokerOptions(override?: Omit<BrokerOptions, "namespace"|"transporter">, options: { quiet?: boolean } = {}): BrokerOptions {
+  public createServiceBrokerOptions(override?: Omit<BrokerOptions, "namespace" | "transporter">, options: { quiet?: boolean } = {}): BrokerOptions {
     this.context.logger[options.quiet ? "debug" : "log"](`Creating moleculer service broker options with namespace=${kleur.blue(this.context.appEnv)} ${kleur.dim("(context.appEnv)")}\n`);
 
     /*
@@ -170,7 +171,7 @@ export class Moleculer extends SDKModule {
     });
   }
 
-  public getCurrentContext(timeout = 2000) {
+  public getCurrentContext(timeout = 2500) {
     const broker = new ServiceBroker(this.createServiceBrokerOptions({
       nodeID: `cli-${os.hostname().toLowerCase()}-${process.pid}-tmp`,
       logger: false,
@@ -181,11 +182,13 @@ export class Moleculer extends SDKModule {
     const promise = broker.start()
       .then(() => {
         const thisNode = broker.getLocalNodeInfo();
-        return broker.call("$node.list", { onlyAvailable: true })
+        return broker.call("$node.list", {onlyAvailable: true})
           .then((nodes: any) => {
             const localNodes = [];
             for (const node of nodes) {
-              if (node.instanceID === thisNode.instanceID || node.id.endsWith("-tmp")) continue;
+              if (node.instanceID === thisNode.instanceID || node.id.endsWith("-tmp")) {
+                continue;
+              }
               if (node.ipList.every((ip: string) => thisNode.ipList.includes(ip))) {
                 localNodes.push(node);
               }
@@ -195,8 +198,7 @@ export class Moleculer extends SDKModule {
               nodes: localNodes,
             };
           })
-          .catch(() => null)
-          .finally(() => broker.stop());
+          .catch(() => null);
       }, () => null);
 
     return Promise.race([
@@ -206,6 +208,7 @@ export class Moleculer extends SDKModule {
       }, timeout)),
       promise,
     ])
+      .finally(() => broker.stop());
   }
 }
 

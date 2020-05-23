@@ -20,6 +20,7 @@ export class Vault extends SDKModule {
   public readonly minInstalledVersion = "v1.4.1";
   public readonly installGuide = `- Install vault CLI from https://www.vaultproject.io/downloads or "brew install vault" for macOS
 - Add "export VAULT_ADDR=https://vault.internal.qmit.pro" into your login shell script for easy use of manual "vault" command.
+- And ask an infrastructure manager to grant Vault permission to your G-suite account.
 `;
 
   public login() {
@@ -61,14 +62,7 @@ export class Vault extends SDKModule {
     });
   }
 
-  public openWebInterface() {
-    return exec(`open ${this.context.VAULT_ADDRESS}/ui/vault/auth?with=oidc`)
-      .then(() => undefined)
-      .catch(err => {
-        this.context.logger.error(err);
-        return null;
-      });
-  }
+  public webInterfaceURL = `${this.context.VAULT_ADDRESS}/ui/vault/auth?with=oidc`;
 }
 
 const singletonVault = new Vault();

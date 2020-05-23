@@ -15,7 +15,7 @@ export class Telepresence extends SDKModule {
       }, () => null);
   }
   public readonly minInstalledVersion = "v0.105";
-  public readonly installGuide = `- Install telepresence CLI from: https://www.telepresence.io (brew install telepresence for macOS)
+  public readonly installGuide = `- Install telepresence CLI from: https://www.telepresence.io or "brew install telepresence" for macOS
 `;
 
   public async getCurrentContext() {
