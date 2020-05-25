@@ -1,14 +1,15 @@
 {
   "name": "qmit-sdk",
-  "version": "1.0.7",
+  "version": "1.0.8",
   "description": "QMIT development SDK and CLI",
-  "main": "sdk/node/dist/index.js",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/qmit-pro/qmit-sdk.git"
   },
   "author": "QMIT Inc.",
   "license": "UNLICENSED",
+  "main": "sdk/node/dist/index.js",
+  "types": "sdk/node/dist/index.d.ts",
   "files": [
     "bin",
     "sdk/node/dist"
