@@ -72,11 +72,11 @@ export class Vault extends SDKModule {
 
 const vault = new Vault();
 
-console.log(
-  vault.fetch(async (get, list) => {
-    return get("common/data/services");
-  })
-);
+// console.log(
+//   vault.fetch(async (get, list) => {
+//     return get("common/data/services");
+//   })
+// );
 
 // singletonVault.loginStatus().then(console.log);
 
