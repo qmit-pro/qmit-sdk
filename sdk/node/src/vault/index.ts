@@ -1,7 +1,7 @@
 import kleur from "kleur";
-import vaultSync from "vault-sync";
+import vaultSync  from "vault-sync";
 import { exec, SDKModule } from "../common";
-import { VaultReaderFactory } from "vault-sync/dist/async";
+import { VaultReaderFactory, VaultReaderOptions } from "vault-sync/dist/async";
 
 export class Vault extends SDKModule {
   public async getInstalledVersion() {
@@ -51,7 +51,7 @@ export class Vault extends SDKModule {
   }
 
   // Use this API for fetch secrets in application
-  public fetch<T = any>(factory: VaultReaderFactory<T>, opts = { debug: false }) {
+  public fetch<T, S>(factory: VaultReaderFactory<T, S>, opts?: Partial<VaultReaderOptions<S>>) {
     const method = `k8s/${this.context.clusterName}`;
     const role = "default";
 

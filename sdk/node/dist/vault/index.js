@@ -57,7 +57,7 @@ class Vault extends common_1.SDKModule {
         });
     }
     // Use this API for fetch secrets in application
-    fetch(factory, opts = { debug: false }) {
+    fetch(factory, opts) {
         const method = `k8s/${this.context.clusterName}`;
         const role = "default";
         this.context.logger.log(`Reading secrets from Vault with method=${kleur_1.default.green(method)} and role=${kleur_1.default.green(role)}`);

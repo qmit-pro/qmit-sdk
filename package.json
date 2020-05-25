@@ -1,6 +1,6 @@
 {
   "name": "qmit-sdk",
-  "version": "1.0.9",
+  "version": "1.0.10",
   "description": "QMIT development SDK and CLI",
   "repository": {
     "type": "git",
