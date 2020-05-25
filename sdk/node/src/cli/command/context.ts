@@ -26,7 +26,7 @@ const command: yargs.CommandModule = {
 
     // set context if has optional args
     if (args.appEnv || args.clusterName) {
-      context.setContext({ appEnv: args.appEnv as any, clusterName: args.clusterName as any });
+      await context.setContext({ appEnv: args.appEnv as any, clusterName: args.clusterName as any });
       context.writeConfig();
     }
 
@@ -52,6 +52,8 @@ const command: yargs.CommandModule = {
       enabled.telepresence ? telepresence.getCurrentContext() : Promise.resolve(),
       enabled.moleculer ? moleculer.getInstalledVersion() : Promise.resolve(),
       enabled.moleculer ? moleculer.getCurrentContext() : Promise.resolve(),
+      context.getInstalledVersion(),
+      context.getLatestVersion(),
     ])
       .then(res => {
           return {
@@ -78,6 +80,10 @@ const command: yargs.CommandModule = {
               installedVersion: res[11],
               currentContext: res[12],
             },
+            context: {
+              installedVersion: res[13],
+              latestVersion: res[14],
+            },
           };
       });
 
@@ -94,7 +100,7 @@ const command: yargs.CommandModule = {
     tableRows.push([
       `qmit`,
       `app-env: ${kleur.blue(context.appEnv)}\ncluster-name: ${kleur.blue(context.clusterName)}\ncluster-zone: ${context.clusterZone}\nkubectl-context: ${context.clusterFullName}`,
-      `${context.version}`,
+      `${data.context.installedVersion !== data.context.latestVersion ? kleur.red(data.context.installedVersion) : data.context.installedVersion}${kleur.dim(`/${data.context.latestVersion}`)}`,
     ]);
 
     // vault

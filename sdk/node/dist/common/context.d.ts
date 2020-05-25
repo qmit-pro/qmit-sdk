@@ -1,3 +1,4 @@
+export { exec } from "child-process-promise";
 export declare type AppEnv = "dev" | "prod";
 export declare type ClusterName = "internal" | "dev" | "prod";
 export declare type Config = {
@@ -8,7 +9,8 @@ export declare type Config = {
 };
 export declare type ContextChangeListener = (ctx: Partial<Config["context"]>) => Promise<void>;
 export declare class Context {
-    readonly version: string;
+    getInstalledVersion(): Promise<string>;
+    getLatestVersion(): Promise<string>;
     readonly envVarName: {
         debug: string;
         appEnv: string;
@@ -40,7 +42,7 @@ export declare class Context {
     readonly configFilePath: string;
     readConfig(): Config | undefined;
     writeConfig(): void;
-    setContext(ctx?: Partial<Config["context"]>): void;
+    setContext(ctx?: Partial<Config["context"]>): Promise<void>;
     private contextChangeListeners;
     addContextChangeListener(listener: ContextChangeListener): void;
     removeContextChangeListener(listener: ContextChangeListener): void;

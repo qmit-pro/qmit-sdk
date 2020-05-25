@@ -6,9 +6,11 @@ const kleur_1 = tslib_1.__importDefault(require("kleur"));
 const path_1 = tslib_1.__importDefault(require("path"));
 const os_1 = tslib_1.__importDefault(require("os"));
 const fs_1 = tslib_1.__importDefault(require("fs"));
+const index_1 = require("./index");
+var child_process_promise_1 = require("child-process-promise");
+Object.defineProperty(exports, "exec", { enumerable: true, get: function () { return child_process_promise_1.exec; } });
 class Context {
     constructor() {
-        this.version = `v${JSON.parse(fs_1.default.readFileSync(path_1.default.join(__dirname, "../../../../package.json")).toString()).version}`.trim();
         this.envVarName = {
             debug: "QMIT_SDK_DEBUG",
             appEnv: "QMIT_APP_ENV",
@@ -60,6 +62,7 @@ class Context {
             clusterName = config && config.context && config.context.clusterName || this.clusterNames[0];
             this.logger.debug(kleur_1.default.dim(`Failed to read environment variable, use ${kleur_1.default.blue(clusterName)} as ${this.envVarName.clusterName}`));
         }
+        // here no need to wait for context change handlers, cause any handlers haven't registered yet
         try {
             this.setContext({ appEnv, clusterName });
         }
@@ -73,6 +76,22 @@ class Context {
             this.writeConfig();
         }
         this.logger.debug(kleur_1.default.dim(`QMIT SDK Context created...\n`));
+    }
+    async getInstalledVersion() {
+        return `v${JSON.parse(fs_1.default.readFileSync(path_1.default.join(__dirname, "../../../../package.json")).toString()).version}`.trim();
+    }
+    getLatestVersion() {
+        return index_1.exec("npm show qmit-sdk version")
+            .then(res => {
+            if (res.childProcess.exitCode === 0) {
+                return `v${res.stdout.split("\n")[0]}`.trim();
+            }
+            return null;
+        })
+            .catch(err => {
+            this.logger.debug(err);
+            return null;
+        });
     }
     getClusterNamesInAppEnv(appEnv) {
         return this.GKE_APP_CLUSTER_MAP[appEnv] || [];
@@ -114,7 +133,7 @@ class Context {
         fs_1.default.writeFileSync(this.configFilePath, JSON.stringify(file, null, 2));
         this.logger.log(kleur_1.default.dim(`Succeed to write ${kleur_1.default.green(this.configFilePath)} file.`));
     }
-    setContext(ctx = {}) {
+    async setContext(ctx = {}) {
         let appEnv;
         let clusterName;
         let clusterNamesInAppEnv;
@@ -150,9 +169,8 @@ class Context {
         this.appEnv = appEnv;
         this.clusterName = clusterName;
         this.logger.debug(`Set appEnv=${kleur_1.default.blue(`${this.appEnv}`)}, clusterName=${kleur_1.default.blue(`${this.clusterName}`)}`);
-        for (const listener of this.contextChangeListeners.values()) {
-            listener({ appEnv, clusterName }).catch(err => this.logger.error(err));
-        }
+        await Promise.all([...this.contextChangeListeners.values()]
+            .map(listener => listener({ appEnv, clusterName }).catch(err => this.logger.error(err))));
     }
     addContextChangeListener(listener) {
         this.contextChangeListeners.add(listener);

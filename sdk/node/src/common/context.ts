@@ -2,6 +2,8 @@ import kleur from "kleur";
 import path from "path";
 import os from "os";
 import fs from "fs";
+import { exec } from "./index";
+export { exec } from "child-process-promise";
 
 export type AppEnv = "dev"|"prod";
 export type ClusterName = "internal"|"dev"|"prod" /* dev2, dev3, prod2, prod3, ... later */;
@@ -14,7 +16,22 @@ export type Config = {
 export type ContextChangeListener = (ctx: Partial<Config["context"]>) => Promise<void>;
 
 export class Context {
-  public readonly version = `v${JSON.parse(fs.readFileSync(path.join(__dirname, "../../../../package.json")).toString()).version}`.trim();
+  public async getInstalledVersion() {
+    return `v${JSON.parse(fs.readFileSync(path.join(__dirname, "../../../../package.json")).toString()).version}`.trim();
+  }
+  public getLatestVersion(): Promise<string> {
+    return exec("npm show qmit-sdk version")
+      .then(res => {
+        if (res.childProcess.exitCode === 0) {
+          return `v${res.stdout.split("\n")[0]}`.trim()
+        }
+        return null as any;
+      })
+      .catch(err => {
+        this.logger.debug(err);
+        return null as any;
+      }) as any;
+  }
   public readonly envVarName = {
     debug: "QMIT_SDK_DEBUG",
     appEnv: "QMIT_APP_ENV",
@@ -95,6 +112,7 @@ export class Context {
       this.logger.debug(kleur.dim(`Failed to read environment variable, use ${kleur.blue(clusterName)} as ${this.envVarName.clusterName}`));
     }
 
+    // here no need to wait for context change handlers, cause any handlers haven't registered yet
     try {
       this.setContext({ appEnv, clusterName });
     } catch (err) {
@@ -132,7 +150,7 @@ export class Context {
     this.logger.log(kleur.dim(`Succeed to write ${kleur.green(this.configFilePath)} file.`));
   }
 
-  public setContext(ctx: Partial<Config["context"]> = {}) {
+  public async setContext(ctx: Partial<Config["context"]> = {}) {
     let appEnv: AppEnv;
     let clusterName: ClusterName;
     let clusterNamesInAppEnv;
@@ -168,9 +186,10 @@ export class Context {
     this.clusterName = clusterName;
     this.logger.debug(`Set appEnv=${kleur.blue(`${this.appEnv}`)}, clusterName=${kleur.blue(`${this.clusterName}`)}`);
 
-    for (const listener of this.contextChangeListeners.values()) {
-      listener({ appEnv, clusterName }).catch(err => this.logger.error(err));
-    }
+    await Promise.all(
+      [...this.contextChangeListeners.values()]
+        .map(listener => listener({ appEnv, clusterName }).catch(err => this.logger.error(err)))
+    );
   }
 
   private contextChangeListeners: Set<ContextChangeListener> = new Set();
