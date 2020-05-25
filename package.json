@@ -1,6 +1,6 @@
 {
   "name": "qmit-sdk",
-  "version": "1.0.8",
+  "version": "1.0.9",
   "description": "QMIT development SDK and CLI",
   "repository": {
     "type": "git",
@@ -35,7 +35,7 @@
     "open": "^7.0.4",
     "qmit-sdk": "^1.0.2",
     "redlock": "^4.1.0",
-    "vault-sync": "1.1.10",
+    "vault-sync": "^2.0.0",
     "wtfnode": "^0.8.1",
     "yargs": "^15.3.1"
   },
