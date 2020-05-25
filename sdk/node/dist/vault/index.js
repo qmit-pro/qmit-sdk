@@ -2,8 +2,9 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.vault = exports.Vault = void 0;
 const tslib_1 = require("tslib");
-const common_1 = require("../common");
+const kleur_1 = tslib_1.__importDefault(require("kleur"));
 const vault_sync_1 = tslib_1.__importDefault(require("vault-sync"));
+const common_1 = require("../common");
 class Vault extends common_1.SDKModule {
     constructor() {
         super(...arguments);
@@ -56,18 +57,24 @@ class Vault extends common_1.SDKModule {
         });
     }
     // Use this API for fetch secrets in application
-    fetch(factory) {
+    fetch(factory, opts = { debug: false }) {
+        const method = `k8s/${this.context.clusterName}`;
+        const role = "default";
+        this.context.logger.log(`Reading secrets from Vault with method=${kleur_1.default.green(method)} and role=${kleur_1.default.green(role)}`);
         return vault_sync_1.default(factory, {
             // vault connection setting
             uri: this.context.VAULT_ADDRESS,
-            debug: false,
+            debug: !!(opts && opts.debug),
             // alternative auth method for kubernetes pod
-            method: `k8s/${this.context.clusterName}`,
-            role: "default",
+            method,
+            role,
         });
     }
 }
 exports.Vault = Vault;
 const vault = new Vault();
 exports.vault = vault;
+console.log(vault.fetch(async (get, list) => {
+    return get("common/data/services");
+}));
 //# sourceMappingURL=index.js.map

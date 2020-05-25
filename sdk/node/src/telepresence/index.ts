@@ -4,18 +4,18 @@ import fs from "fs";
 import { exec, spawn, SDKModule } from "../common";
 
 export class Telepresence extends SDKModule {
-  public getInstalledVersion(): Promise<string | null> {
+  public getInstalledVersion() {
     return exec("telepresence --version")
       .then(res => {
         if (res.childProcess.exitCode === 0) {
           return `v${res.stdout.trim()}`;
         } else {
-          return null;
+          return null as any;
         }
       })
       .catch(err => {
         this.context.logger.debug(err);
-        return null;
+        return null as any;
       });
   }
   public readonly minInstalledVersion = "v0.105";
@@ -64,7 +64,7 @@ export class Telepresence extends SDKModule {
           };
         }
 
-        return null;
+        return null as any;
       }, () => {
         return {
           sessionId,
@@ -73,7 +73,7 @@ export class Telepresence extends SDKModule {
       })
       .catch(err => {
         this.context.logger.debug(err);
-        return null;
+        return null as any;
       });
   }
 

@@ -2,18 +2,18 @@ import kleur from "kleur";
 import { exec, SDKModule } from "../common";
 
 export class GoogleCloud extends SDKModule {
-  public getInstalledVersion(): Promise<string | null> {
+  public getInstalledVersion() {
     return exec("gcloud --version")
       .then(res => {
         if (res.childProcess.exitCode === 0) {
           return `v${res.stdout.split("\n")[0].split("SDK ")[1]}`;
         } else {
-          return null;
+          return null as any;
         }
       })
       .catch(err => {
         this.context.logger.debug(err);
-        return null;
+        return null as any;
       });
   }
   public readonly minInstalledVersion = "v292.0.0";
@@ -47,7 +47,7 @@ export class GoogleCloud extends SDKModule {
           return exec("gcloud auth print-access-token")
             .then(res2 => {
               if (res2.childProcess.exitCode !== 0) {
-                return null;
+                return null as any;
               }
 
               return {
@@ -56,11 +56,11 @@ export class GoogleCloud extends SDKModule {
             });
         }
 
-        return null;
+        return null as any;
       })
       .catch(err => {
         this.context.logger.debug(err);
-        return null;
+        return null as any;
       });
   }
 

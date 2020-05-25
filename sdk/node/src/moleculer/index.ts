@@ -5,18 +5,18 @@ import { ServiceBroker, BrokerOptions } from "moleculer";
 import { exec, SDKModule } from "../common";
 
 export class Moleculer extends SDKModule {
-  public getInstalledVersion(): Promise<string | null> {
+  public getInstalledVersion() {
     return exec("moleculer --version")
       .then(res => {
         if (res.childProcess.exitCode === 0) {
           return `v${res.stdout.trim()}`;
         } else {
-          return null;
+          return null as any;
         }
       })
       .catch(err => {
         this.context.logger.debug(err);
-        return null;
+        return null as any;
       });
   }
 

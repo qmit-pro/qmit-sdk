@@ -1,5 +1,6 @@
-import { exec, SDKModule } from "../common";
+import kleur from "kleur";
 import vaultSync from "vault-sync";
+import { exec, SDKModule } from "../common";
 import { VaultReaderFactory } from "vault-sync/dist/async";
 
 export class Vault extends SDKModule {
@@ -9,12 +10,12 @@ export class Vault extends SDKModule {
         if (res.childProcess.exitCode === 0) {
           return `${res.stdout.split("Vault ")[1].split(" ")[0]}`.trim();
         } else {
-          return null;
+          return null as any;
         }
       })
       .catch(err => {
         this.context.logger.debug(err);
-        return null;
+        return null as any;
       });
   }
   public readonly minInstalledVersion = "v1.4.1";
@@ -45,33 +46,37 @@ export class Vault extends SDKModule {
       })
       .catch(err => {
         this.context.logger.debug(err);
-        return null;
+        return null as any;
       });
   }
 
   // Use this API for fetch secrets in application
-  public fetch<T = any>(factory: VaultReaderFactory<T>) {
+  public fetch<T = any>(factory: VaultReaderFactory<T>, opts = { debug: false }) {
+    const method = `k8s/${this.context.clusterName}`;
+    const role = "default";
+
+    this.context.logger.log(`Reading secrets from Vault with method=${kleur.green(method)} and role=${kleur.green(role)}`)
     return vaultSync(factory, {
       // vault connection setting
       uri: this.context.VAULT_ADDRESS,
-      debug: false,
+      debug: !!(opts && opts.debug),
 
       // alternative auth method for kubernetes pod
-      method: `k8s/${this.context.clusterName}`,
-      role: "default",
+      method,
+      role,
     });
   }
 
-  public webInterfaceURL = `${this.context.VAULT_ADDRESS}/ui/vault/auth?with=oidc`;
+  public readonly webInterfaceURL = `${this.context.VAULT_ADDRESS}/ui/vault/auth?with=oidc`;
 }
 
 const vault = new Vault();
 
-// console.log(
-//   singletonVault.fetch(async (get, list) => {
-//     return get("common/data/services");
-//   })
-// );
+console.log(
+  vault.fetch(async (get, list) => {
+    return get("common/data/services");
+  })
+);
 
 // singletonVault.loginStatus().then(console.log);
 
