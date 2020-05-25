@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.GoogleCloud = void 0;
+exports.gcloud = exports.GoogleCloud = void 0;
 const tslib_1 = require("tslib");
 const kleur_1 = tslib_1.__importDefault(require("kleur"));
 const common_1 = require("../common");
@@ -115,19 +115,6 @@ class GoogleCloud extends common_1.SDKModule {
     }
 }
 exports.GoogleCloud = GoogleCloud;
-const singletonGoogleCloud = new GoogleCloud();
-// singletonGoogleCloud.getInstalledVersion().then(console.log);
-//
-// singletonGoogleCloud.login().then(console.log);
-//
-// singletonGoogleCloud.loginStatus().then(console.log);
-//
-// singletonGoogleCloud.listClusters().then(console.log);
-//
-// singletonGoogleCloud.ensureClusterCredentials().then(console.log);
-//
-// singletonGoogleCloud.listSQLInstances().then(console.log);
-//
-// singletonGoogleCloud.listRedisInstances().then(console.log);
-exports.default = singletonGoogleCloud;
+const gcloud = new GoogleCloud();
+exports.gcloud = gcloud;
 //# sourceMappingURL=index.js.map

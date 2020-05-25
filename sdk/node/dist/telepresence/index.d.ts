@@ -9,5 +9,5 @@ export declare class Telepresence extends SDKModule {
     } | null>;
     runCommand(args?: string): Promise<void>;
 }
-declare const singletonTelepresence: Telepresence;
-export default singletonTelepresence;
+declare const telepresence: Telepresence;
+export { telepresence };

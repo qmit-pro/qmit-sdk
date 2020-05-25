@@ -66,7 +66,7 @@ export class Context {
 
   private readonly debugIgnoredConsole: Console = {
     ...console,
-    debug(...args: any) {},
+    debug(...args: any[]) {},
   };
   public get logger(): Console {
     return process.env[this.envVarName.debug] ? console : this.debugIgnoredConsole;
@@ -182,5 +182,5 @@ export class Context {
   }
 }
 
-const globalContext = new Context();
-export default globalContext;
+const context = new Context();
+export { context };

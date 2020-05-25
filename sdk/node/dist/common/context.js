@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.Context = void 0;
+exports.context = exports.Context = void 0;
 const tslib_1 = require("tslib");
 const kleur_1 = tslib_1.__importDefault(require("kleur"));
 const path_1 = tslib_1.__importDefault(require("path"));
@@ -162,6 +162,6 @@ class Context {
     }
 }
 exports.Context = Context;
-const globalContext = new Context();
-exports.default = globalContext;
+const context = new Context();
+exports.context = context;
 //# sourceMappingURL=context.js.map

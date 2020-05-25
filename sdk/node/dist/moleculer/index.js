@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.Moleculer = void 0;
+exports.moleculer = exports.Moleculer = void 0;
 const tslib_1 = require("tslib");
 const lodash_1 = tslib_1.__importDefault(require("lodash"));
 const kleur_1 = tslib_1.__importDefault(require("kleur"));
@@ -184,13 +184,6 @@ class Moleculer extends common_1.SDKModule {
     }
 }
 exports.Moleculer = Moleculer;
-const singletonMoleculer = new Moleculer();
-// console.log(singletonMoleculer.createServiceBrokerOptions());
-//
-// singletonMoleculer.getInstalledVersion().then(console.log);
-//
-// singletonMoleculer.runREPL();
-//
-// singletonMoleculer.getCurrentContext().then(console.log);
-exports.default = singletonMoleculer;
+const moleculer = new Moleculer();
+exports.moleculer = moleculer;
 //# sourceMappingURL=index.js.map

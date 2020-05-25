@@ -10,5 +10,5 @@ export declare class Moleculer extends SDKModule {
     runREPL(): Promise<void>;
     getCurrentContext(timeout?: number): Promise<unknown>;
 }
-declare const singletonMoleculer: Moleculer;
-export default singletonMoleculer;
+declare const moleculer: Moleculer;
+export { moleculer };

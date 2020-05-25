@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.Kubectl = void 0;
+exports.kubectl = exports.Kubectl = void 0;
 // import kleur from "kleur";
 const common_1 = require("../common");
 class Kubectl extends common_1.SDKModule {
@@ -51,8 +51,6 @@ class Kubectl extends common_1.SDKModule {
     }
 }
 exports.Kubectl = Kubectl;
-const singletonKubectl = new Kubectl();
-// singletonKubectl.getInstalledVersion().then(console.log);
-// singletonKubectl.getCurrentContext().then(console.log);
-exports.default = singletonKubectl;
+const kubectl = new Kubectl();
+exports.kubectl = kubectl;
 //# sourceMappingURL=index.js.map

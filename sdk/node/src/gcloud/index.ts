@@ -125,7 +125,7 @@ export class GoogleCloud extends SDKModule {
   }
 }
 
-const singletonGoogleCloud = new GoogleCloud();
+const gcloud = new GoogleCloud();
 
 // singletonGoogleCloud.getInstalledVersion().then(console.log);
 //
@@ -141,4 +141,4 @@ const singletonGoogleCloud = new GoogleCloud();
 //
 // singletonGoogleCloud.listRedisInstances().then(console.log);
 
-export default singletonGoogleCloud;
+export { gcloud };

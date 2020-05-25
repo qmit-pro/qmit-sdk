@@ -1,6 +1,6 @@
 {
   "name": "qmit-sdk",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "description": "QMIT development SDK and CLI",
   "main": "sdk/node/dist/index.js",
   "repository": {
@@ -8,7 +8,7 @@
     "url": "git+https://github.com/qmit-pro/qmit-sdk.git"
   },
   "author": "QMIT Inc.",
-  "license": "private",
+  "license": "UNLICENSED",
   "files": [
     "bin",
     "sdk/node/dist"

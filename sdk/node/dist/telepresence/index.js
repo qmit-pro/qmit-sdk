@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.Telepresence = void 0;
+exports.telepresence = exports.Telepresence = void 0;
 const tslib_1 = require("tslib");
 const path_1 = tslib_1.__importDefault(require("path"));
 const fs_1 = tslib_1.__importDefault(require("fs"));
@@ -97,9 +97,6 @@ class Telepresence extends common_1.SDKModule {
     }
 }
 exports.Telepresence = Telepresence;
-const singletonTelepresence = new Telepresence();
-// singletonTelepresence.getInstalledVersion().then(console.log);
-// singletonTelepresence.getCurrentContext().then(console.log);
-// singletonTelepresence.runCommand();
-exports.default = singletonTelepresence;
+const telepresence = new Telepresence();
+exports.telepresence = telepresence;
 //# sourceMappingURL=index.js.map

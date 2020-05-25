@@ -65,7 +65,7 @@ export class Vault extends SDKModule {
   public webInterfaceURL = `${this.context.VAULT_ADDRESS}/ui/vault/auth?with=oidc`;
 }
 
-const singletonVault = new Vault();
+const vault = new Vault();
 
 // console.log(
 //   singletonVault.fetch(async (get, list) => {
@@ -81,4 +81,4 @@ const singletonVault = new Vault();
 
 // singletonVault.openWebInterface().then(console.log);
 
-export default singletonVault;
+export { vault };

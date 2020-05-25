@@ -18,5 +18,5 @@ export declare class GoogleCloud extends SDKModule {
         zone: string;
     }>;
 }
-declare const singletonGoogleCloud: GoogleCloud;
-export default singletonGoogleCloud;
+declare const gcloud: GoogleCloud;
+export { gcloud };

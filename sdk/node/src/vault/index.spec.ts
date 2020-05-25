@@ -1,4 +1,4 @@
-import vault from "./index";
+import { vault } from "./index";
 
 describe("vault module", () => {
   it("vault.installGuide should be string", () => {

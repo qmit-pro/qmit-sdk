@@ -212,7 +212,7 @@ export class Moleculer extends SDKModule {
   }
 }
 
-const singletonMoleculer = new Moleculer();
+const moleculer = new Moleculer();
 
 // console.log(singletonMoleculer.createServiceBrokerOptions());
 //
@@ -222,4 +222,4 @@ const singletonMoleculer = new Moleculer();
 //
 // singletonMoleculer.getCurrentContext().then(console.log);
 
-export default singletonMoleculer;
+export { moleculer };

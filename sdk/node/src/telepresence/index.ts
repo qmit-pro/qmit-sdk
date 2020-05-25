@@ -97,10 +97,10 @@ export class Telepresence extends SDKModule {
   }
 }
 
-const singletonTelepresence = new Telepresence();
+const telepresence = new Telepresence();
 
 // singletonTelepresence.getInstalledVersion().then(console.log);
 // singletonTelepresence.getCurrentContext().then(console.log);
 // singletonTelepresence.runCommand();
 
-export default singletonTelepresence;
+export { telepresence };

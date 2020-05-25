@@ -9,5 +9,5 @@ export declare class Vault extends SDKModule {
     fetch<T = any>(factory: VaultReaderFactory<T>): T;
     webInterfaceURL: string;
 }
-declare const singletonVault: Vault;
-export default singletonVault;
+declare const vault: Vault;
+export { vault };

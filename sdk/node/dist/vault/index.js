@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.Vault = void 0;
+exports.vault = exports.Vault = void 0;
 const tslib_1 = require("tslib");
 const common_1 = require("../common");
 const vault_sync_1 = tslib_1.__importDefault(require("vault-sync"));
@@ -68,15 +68,6 @@ class Vault extends common_1.SDKModule {
     }
 }
 exports.Vault = Vault;
-const singletonVault = new Vault();
-// console.log(
-//   singletonVault.fetch(async (get, list) => {
-//     return get("common/data/services");
-//   })
-// );
-// singletonVault.loginStatus().then(console.log);
-// singletonVault.login().then(console.log);
-// singletonVault.getInstalledVersion().then(console.log);
-// singletonVault.openWebInterface().then(console.log);
-exports.default = singletonVault;
+const vault = new Vault();
+exports.vault = vault;
 //# sourceMappingURL=index.js.map

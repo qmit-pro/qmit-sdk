@@ -45,5 +45,5 @@ export declare class Context {
     addContextChangeListener(listener: ContextChangeListener): void;
     removeContextChangeListener(listener: ContextChangeListener): void;
 }
-declare const globalContext: Context;
-export default globalContext;
+declare const context: Context;
+export { context };

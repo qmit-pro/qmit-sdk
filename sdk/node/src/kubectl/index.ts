@@ -47,9 +47,9 @@ export class Kubectl extends SDKModule {
   }
 }
 
-const singletonKubectl = new Kubectl();
+const kubectl = new Kubectl();
 
 // singletonKubectl.getInstalledVersion().then(console.log);
 // singletonKubectl.getCurrentContext().then(console.log);
 
-export default singletonKubectl;
+export { kubectl };
