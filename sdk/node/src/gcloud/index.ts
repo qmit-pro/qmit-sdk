@@ -12,7 +12,7 @@ export class GoogleCloud extends SDKModule {
         }
       })
       .catch(err => {
-        this.context.logger.error(err);
+        this.context.logger.debug(err);
         return null;
       });
   }
@@ -59,7 +59,7 @@ export class GoogleCloud extends SDKModule {
         return null;
       })
       .catch(err => {
-        this.context.logger.error(err);
+        this.context.logger.debug(err);
         return null;
       });
   }

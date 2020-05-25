@@ -15,7 +15,7 @@ export class Moleculer extends SDKModule {
         }
       })
       .catch(err => {
-        this.context.logger.error(err);
+        this.context.logger.debug(err);
         return null;
       });
   }

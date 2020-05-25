@@ -27,7 +27,7 @@ class GoogleCloud extends common_1.SDKModule {
             }
         })
             .catch(err => {
-            this.context.logger.error(err);
+            this.context.logger.debug(err);
             return null;
         });
     }
@@ -57,7 +57,7 @@ class GoogleCloud extends common_1.SDKModule {
             return null;
         })
             .catch(err => {
-            this.context.logger.error(err);
+            this.context.logger.debug(err);
             return null;
         });
     }

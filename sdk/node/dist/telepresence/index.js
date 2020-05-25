@@ -21,7 +21,11 @@ class Telepresence extends common_1.SDKModule {
             else {
                 return null;
             }
-        }, () => null);
+        })
+            .catch(err => {
+            this.context.logger.debug(err);
+            return null;
+        });
     }
     async getCurrentContext() {
         const tmpPath = "/tmp";
@@ -73,7 +77,7 @@ class Telepresence extends common_1.SDKModule {
             };
         })
             .catch(err => {
-            this.context.logger.error(err);
+            this.context.logger.debug(err);
             return null;
         });
     }

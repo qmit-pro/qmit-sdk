@@ -25,7 +25,7 @@ class Vault extends common_1.SDKModule {
             }
         })
             .catch(err => {
-            this.context.logger.error(err);
+            this.context.logger.debug(err);
             return null;
         });
     }
@@ -51,7 +51,7 @@ class Vault extends common_1.SDKModule {
             }
         })
             .catch(err => {
-            this.context.logger.error(err);
+            this.context.logger.debug(err);
             return null;
         });
     }

@@ -1,6 +1,6 @@
 {
   "name": "qmit-sdk",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "QMIT development SDK and CLI",
   "main": "sdk/node/dist/index.js",
   "repository": {

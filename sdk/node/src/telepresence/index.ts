@@ -12,7 +12,11 @@ export class Telepresence extends SDKModule {
         } else {
           return null;
         }
-      }, () => null);
+      })
+      .catch(err => {
+        this.context.logger.debug(err);
+        return null;
+      });
   }
   public readonly minInstalledVersion = "v0.105";
   public readonly installGuide = `- Install telepresence CLI from: https://www.telepresence.io or "brew install telepresence" for macOS
@@ -68,7 +72,7 @@ export class Telepresence extends SDKModule {
         };
       })
       .catch(err => {
-        this.context.logger.error(err);
+        this.context.logger.debug(err);
         return null;
       });
   }
