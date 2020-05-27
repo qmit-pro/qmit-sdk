@@ -1,7 +1,7 @@
 import kleur from "kleur";
 import vaultSync  from "vault-sync";
-import { exec, SDKModule } from "../common";
 import { VaultReaderFactory, VaultReaderOptions } from "vault-sync/dist/async";
+import { exec, SDKModule } from "../common";
 
 export class Vault extends SDKModule {
   public async getInstalledVersion() {

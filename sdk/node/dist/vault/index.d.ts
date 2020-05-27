@@ -1,5 +1,5 @@
-import { SDKModule } from "../common";
 import { VaultReaderFactory, VaultReaderOptions } from "vault-sync/dist/async";
+import { SDKModule } from "../common";
 export declare class Vault extends SDKModule {
     getInstalledVersion(): Promise<any>;
     readonly minInstalledVersion = "v1.4.1";
