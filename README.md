@@ -33,6 +33,38 @@ Commands:
 Options:
   --help     Show help                                                 [boolean]
   --version  Show version number                                       [boolean]
+
+
+$ qmit ctx
+=== QMIT CLI Context ===
+╔══════════════╤═════════════════════════════════════════════════════╤═══════════════════╗
+║ Service      │ Current Context                                     │ Installed CLI     ║
+╟──────────────┼─────────────────────────────────────────────────────┼───────────────────╢
+║ qmit         │ app-env: dev                                        │ v1.0.16/v1.0.17   ║
+║              │ cluster-name: dev                                   │                   ║
+║              │ cluster-zone: asia-northeast1-a                     │                   ║
+║              │ kubectl-context: gke_qmit-pro_asia-northeast1-a_dev │                   ║
+╟──────────────┼─────────────────────────────────────────────────────┼───────────────────╢
+║ vault        │ email: dw.kim@qmit.kr                               │ v1.4.1/v1.4.1     ║
+║              │ name: 김동욱                                          │                   ║
+║              │ role: default                                       │                   ║
+║              │ policies: default, developer                        │                   ║
+╟──────────────┼─────────────────────────────────────────────────────┼───────────────────╢
+║ gcloud       │ account: dw.kim@qmit.kr                             │ v292.0.0/v292.0.0 ║
+╟──────────────┼─────────────────────────────────────────────────────┼───────────────────╢
+║ kubectl      │ cluster: gke_qmit-pro_asia-northeast1-a_dev         │ v1.14.10/v1.14.10 ║
+║              │ user: gke_qmit-pro_asia-northeast1-a_dev            │                   ║
+║              │ namespace: default                                  │                   ║
+╟──────────────┼─────────────────────────────────────────────────────┼───────────────────╢
+║ telepresence │ session: 913d91a533494899b25158f55124fee4           │ v0.105/v0.105     ║
+║              │ deployment: telepresence-1590563677-551853-35800    │                   ║
+║              │ namespace: default                                  │                   ║
+║              │ images: datawire/telepresence-k8s:0.105             │                   ║
+║              │ created at: 2020-05-27T07:14:47Z                    │                   ║
+╟──────────────┼─────────────────────────────────────────────────────┼───────────────────╢
+║ moleculer    │ namespace: dev (app-env)                            │ v0.7.1/v0.7.1     ║
+║              │                                                     │                   ║
+╚══════════════╧═════════════════════════════════════════════════════╧═══════════════════╝
 ```
 
 ## 3. SDK
