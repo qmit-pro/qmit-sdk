@@ -5833,10 +5833,10 @@ vault-sync@1.1.10:
     sync-rpc "^1.3.6"
     tslib "^2.0.0"
 
-vault-sync@^2.0.1:
-  version "2.0.1"
-  resolved "https://registry.yarnpkg.com/vault-sync/-/vault-sync-2.0.1.tgz#848bc25e8cc0c884d3a84c24ee07805773e33918"
-  integrity sha512-deDVSgUuKgMzyJnxmMsdLrcHWjRDpkPpZxzhNhWtIdZM5n9Z4njy/m4bl+vh/Vv78OcbSlP8oeeTvGbNhNgnQQ==
+vault-sync@^2.0.4:
+  version "2.0.4"
+  resolved "https://registry.yarnpkg.com/vault-sync/-/vault-sync-2.0.4.tgz#5af060a101b21d824a8ab1507e09a14a89a07c76"
+  integrity sha512-AvHKx1E0QvB0N+0CB5g3Gpj3RmZ7yvs1Lxo/o+92lgrCKufdGTHJ98qiIkWCn5BZa2B/OLNcaKaqpgTa7zf8LA==
   dependencies:
     node-fetch "^2.6.0"
     sync-rpc "^1.3.6"
