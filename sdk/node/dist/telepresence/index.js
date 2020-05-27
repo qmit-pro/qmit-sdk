@@ -81,14 +81,14 @@ class Telepresence extends common_1.SDKModule {
             return null;
         });
     }
-    async runCommand(args = "") {
+    async runCommand(args = []) {
         const oldSession = await this.getCurrentContext();
         if (oldSession) {
             const err = new Error("telepresence session already exists");
             err.data = oldSession;
             throw err;
         }
-        const { childProcess } = await common_1.spawn(`telepresence`, `--also-proxy ${this.context.GCP_VPN_CIRD} ${args}`.split(" ").map(arg => arg.trim()).filter(arg => !!arg), {
+        const { childProcess } = await common_1.spawn(`telepresence`, `--also-proxy ${this.context.GCP_VPN_CIRD}`.split(" ").map(arg => arg.trim()).filter(arg => !!arg).concat(args), {
             detached: false,
             shell: false,
             stdio: [process.stdin, process.stdout, process.stderr],

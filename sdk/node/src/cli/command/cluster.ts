@@ -8,9 +8,10 @@ const command: yargs.CommandModule = {
   command: `cluster [options..]`,
   describe,
   async handler(args) {
+    const argsOptions = args.options as string[];
     const result = await gcloud.ensureClusterCredentials();
-    context.logger.log(`Connecting to cluster ${kleur.blue(result.cluster)} ${kleur.dim(`(${result.zone})`)}`);
-    return telepresence.runCommand(args.options as string);
+    context.logger.log(`Connecting to cluster ${kleur.blue(result.cluster)} ${kleur.dim(`(${result.zone})`)} with args: ${argsOptions.join(" ") || "-"}`);
+    return telepresence.runCommand(argsOptions);
   },
   builder(y) {
     const prefix = `$0 cluster`;

@@ -74,4 +74,11 @@ class Vault extends common_1.SDKModule {
 exports.Vault = Vault;
 const vault = new Vault();
 exports.vault = vault;
+console.log(vault.fetch(async (get, list, s) => {
+    return get(`common/data/${s.name}`);
+}, {
+    sandbox: {
+        name: "services",
+    },
+}));
 //# sourceMappingURL=index.js.map

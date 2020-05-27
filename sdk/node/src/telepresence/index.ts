@@ -77,7 +77,7 @@ export class Telepresence extends SDKModule {
       });
   }
 
-  public async runCommand(args: string = "") {
+  public async runCommand(args: string[] = []) {
     const oldSession = await this.getCurrentContext();
     if (oldSession) {
       const err = new Error("telepresence session already exists");
@@ -87,7 +87,7 @@ export class Telepresence extends SDKModule {
 
     const { childProcess } = await spawn(
       `telepresence`,
-      `--also-proxy ${this.context.GCP_VPN_CIRD} ${args}`.split(" ").map(arg => arg.trim()).filter(arg => !!arg),
+      `--also-proxy ${this.context.GCP_VPN_CIRD}`.split(" ").map(arg => arg.trim()).filter(arg => !!arg).concat(args),
       {
         detached: false,
         shell: false,
