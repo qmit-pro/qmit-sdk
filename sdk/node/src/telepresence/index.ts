@@ -23,6 +23,7 @@ export class Telepresence extends SDKModule {
 `;
 
   public async getCurrentContext() {
+    // TODO: enhance this logic
     const tmpPath = "/tmp";
     const filePaths = fs.readdirSync(tmpPath);
     let sessionId: string | undefined;
@@ -40,7 +41,6 @@ export class Telepresence extends SDKModule {
           }
         } catch (err) {
           // remove dead telepresence session garbage
-          // TODO: fix this logic
           // this.context.logger.log(kleur.dim(`Deleting dead telepresence session: ${kleur.red(sid)}`));
           // fs.rmdirSync(path.join(tmpPath, filePath), { recursive: true });
         }

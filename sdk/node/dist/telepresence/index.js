@@ -28,6 +28,7 @@ class Telepresence extends common_1.SDKModule {
         });
     }
     async getCurrentContext() {
+        // TODO: enhance this logic
         const tmpPath = "/tmp";
         const filePaths = fs_1.default.readdirSync(tmpPath);
         let sessionId;
@@ -48,7 +49,6 @@ class Telepresence extends common_1.SDKModule {
                 }
                 catch (err) {
                     // remove dead telepresence session garbage
-                    // TODO: fix this logic
                     // this.context.logger.log(kleur.dim(`Deleting dead telepresence session: ${kleur.red(sid)}`));
                     // fs.rmdirSync(path.join(tmpPath, filePath), { recursive: true });
                 }

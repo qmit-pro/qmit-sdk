@@ -1,3 +1,4 @@
+import _ from "lodash";
 import kleur from "kleur";
 import vaultSync  from "vault-sync";
 import { VaultReaderFactory, VaultReaderOptions } from "vault-sync/dist/async";
@@ -51,20 +52,26 @@ export class Vault extends SDKModule {
   }
 
   // Use this API for fetch secrets in application
-  public fetch<T, S>(factory: VaultReaderFactory<T, S>, opts?: Partial<VaultReaderOptions<S>>) {
+  public fetch<T, S>(factory: VaultReaderFactory<T, Omit<{ appEnv: string, clusterName: string }, keyof S> & S>, opts?: Partial<VaultReaderOptions<S>>) {
     const method = `k8s/${this.context.clusterName}`;
     const role = "default";
 
     this.context.logger.log(`Reading secrets from Vault with method=${kleur.green(method)} and role=${kleur.green(role)}`)
-    return vaultSync(factory, {
+    return vaultSync(factory, _.defaultsDeep(opts || {}, {
       // vault connection setting
       uri: this.context.VAULT_ADDRESS,
-      debug: !!(opts && opts.debug),
+      debug: false,
 
       // alternative auth method for kubernetes pod
       method,
       role,
-    });
+
+      // default sandbox
+      sandbox: {
+        appEnv: this.context.appEnv,
+        clusterName: this.context.clusterName,
+      },
+    }));
   }
 
   public readonly webInterfaceURL = `${this.context.VAULT_ADDRESS}/ui/vault/auth?with=oidc`;

@@ -6,17 +6,22 @@ describe("vault module", () => {
         expect(index_1.vault.installGuide).toEqual(expect.any(String));
     });
     it("vault.fetch should work with sandbox", () => {
-        expect(index_1.vault.fetch(async (get, list, s = { appEnv: "dev", fuck: true }) => {
+        expect(index_1.vault.fetch(async (get, list, s) => {
             return {
-                env: "test",
+                appEnv: s.appEnv,
+                clusterName: s.clusterName,
+                another: s.another + 1000,
                 example: (await get("common/data/test")).data,
             };
         }, {
             sandbox: {
-                appEnv: "test",
+                appEnv: 1234,
+                another: 1234,
             },
         })).toStrictEqual(expect.objectContaining({
-            env: "test",
+            appEnv: 1234,
+            clusterName: index_1.vault.context.clusterName,
+            another: 2234,
             example: expect.anything(),
         }));
     });
