@@ -77,13 +77,13 @@ $ qmit ctx
 ### 3.1. Node.js SDK
 #### A. vault
 ```js
-import { context, vault } from "qmit-sdk";
+import { vault } from "qmit-sdk";
 
 // it resolves synchronously!
-const config = vault.fetch(async (get, list) => {
+const config = vault.fetch(async (get, list, { appEnv, clusterName, anyVer }) => {
     const [whatever, something] = await Promise.all([
         get("common/data/some-mysql/secrets").then(res => res.data),
-        get(`${context.appEnv}/data/envDependentSecrets`).then(res => res.data),
+        get(`${appEnv}/data/envDependentSecrets`).then(res => res.data),
     ]);
     
     // do whatever here
@@ -92,6 +92,10 @@ const config = vault.fetch(async (get, list) => {
         whatever,
         something,
     }
+}, {
+    sandbox: {
+        anyVar: "blablabla..",
+    },
 });
 
 // ...
