@@ -7,6 +7,16 @@ const kleur_1 = tslib_1.__importDefault(require("kleur"));
 const os_1 = tslib_1.__importDefault(require("os"));
 const moleculer_1 = require("moleculer");
 const common_1 = require("../common");
+/* modify cache keygen logic to distinguish paramX: [1] and paramX: 1 */
+// @ts-ignore
+const BaseCacher = tslib_1.__importStar(require("moleculer/src/cachers/base"));
+const _generateKeyFromObject = BaseCacher.prototype._generateKeyFromObject;
+BaseCacher.prototype._generateKeyFromObject = function (obj) {
+    if (Array.isArray(obj)) {
+        return "[" + obj.map(o => this._generateKeyFromObject(o)).join("|") + "]";
+    }
+    return _generateKeyFromObject(obj);
+};
 class Moleculer extends common_1.SDKModule {
     constructor() {
         super(...arguments);
@@ -89,7 +99,19 @@ class Moleculer extends common_1.SDKModule {
             },
             // uidGenerator: undefined,
             // errorHandler: undefined,
-            cacher: "redis://redis.internal.qmit.pro:6379",
+            cacher: {
+                type: "Redis",
+                options: {
+                    ttl: 60,
+                    monitor: false,
+                    redis: {
+                        host: "redis.internal.qmit.pro",
+                        port: 6379,
+                        password: "",
+                        db: 0
+                    }
+                }
+            },
             serializer: "JSON",
             validator: true,
             metrics: {

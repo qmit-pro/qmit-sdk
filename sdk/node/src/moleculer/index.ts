@@ -4,6 +4,18 @@ import os from "os";
 import { ServiceBroker, BrokerOptions } from "moleculer";
 import { exec, SDKModule } from "../common";
 
+
+/* modify cache keygen logic to distinguish paramX: [1] and paramX: 1 */
+// @ts-ignore
+import * as BaseCacher from "moleculer/src/cachers/base";
+const _generateKeyFromObject = BaseCacher.prototype._generateKeyFromObject;
+BaseCacher.prototype._generateKeyFromObject = function (obj: any) {
+  if (Array.isArray(obj)) {
+    return "[" + obj.map(o => this._generateKeyFromObject(o)).join("|") + "]";
+  }
+  return _generateKeyFromObject(obj);
+}
+
 export class Moleculer extends SDKModule {
   public getInstalledVersion() {
     return exec("moleculer --version")
@@ -98,7 +110,19 @@ export class Moleculer extends SDKModule {
 
       // errorHandler: undefined,
 
-      cacher: "redis://redis.internal.qmit.pro:6379",
+      cacher: {
+        type: "Redis",
+        options: {
+          ttl: 60,
+          monitor: false,
+          redis: {
+            host: "redis.internal.qmit.pro",
+            port: 6379,
+            password: "",
+            db: 0
+          }
+        }
+      },
 
       serializer: "JSON",
 
