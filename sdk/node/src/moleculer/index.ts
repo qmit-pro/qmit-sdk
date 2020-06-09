@@ -7,7 +7,7 @@ import { exec, SDKModule } from "../common";
 
 /* modify cache keygen logic to distinguish paramX: [1] and paramX: 1 */
 // @ts-ignore
-import * as BaseCacher from "moleculer/src/cachers/base";
+import BaseCacher from "moleculer/src/cachers/base";
 const _generateKeyFromObject = BaseCacher.prototype._generateKeyFromObject;
 BaseCacher.prototype._generateKeyFromObject = function (obj: any) {
   if (Array.isArray(obj)) {

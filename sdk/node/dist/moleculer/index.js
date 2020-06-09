@@ -9,9 +9,9 @@ const moleculer_1 = require("moleculer");
 const common_1 = require("../common");
 /* modify cache keygen logic to distinguish paramX: [1] and paramX: 1 */
 // @ts-ignore
-const BaseCacher = tslib_1.__importStar(require("moleculer/src/cachers/base"));
-const _generateKeyFromObject = BaseCacher.prototype._generateKeyFromObject;
-BaseCacher.prototype._generateKeyFromObject = function (obj) {
+const base_1 = tslib_1.__importDefault(require("moleculer/src/cachers/base"));
+const _generateKeyFromObject = base_1.default.prototype._generateKeyFromObject;
+base_1.default.prototype._generateKeyFromObject = function (obj) {
     if (Array.isArray(obj)) {
         return "[" + obj.map(o => this._generateKeyFromObject(o)).join("|") + "]";
     }
