@@ -5,15 +5,18 @@ import { ServiceBroker, BrokerOptions } from "moleculer";
 import { exec, SDKModule } from "../common";
 
 
-/* modify cache keygen logic to distinguish paramX: [1] and paramX: 1 */
+/*
+modify cache keygen logic to distinguish paramX: [1] and paramX: 1
+TODO: make a PR on moleculerjs/moleculer
+*/
 // @ts-ignore
 import BaseCacher from "moleculer/src/cachers/base";
-const _generateKeyFromObject = BaseCacher.prototype._generateKeyFromObject;
-BaseCacher.prototype._generateKeyFromObject = function (obj: any) {
+BaseCacher.prototype._originalGenerateKeyFromObject = BaseCacher.prototype._generateKeyFromObject;
+BaseCacher.prototype._generateKeyFromObject = function (obj: any): string {
   if (Array.isArray(obj)) {
     return "[" + obj.map(o => this._generateKeyFromObject(o)).join("|") + "]";
   }
-  return _generateKeyFromObject(obj);
+  return this._originalGenerateKeyFromObject(obj);
 }
 
 export class Moleculer extends SDKModule {

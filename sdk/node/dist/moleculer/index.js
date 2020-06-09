@@ -7,15 +7,18 @@ const kleur_1 = tslib_1.__importDefault(require("kleur"));
 const os_1 = tslib_1.__importDefault(require("os"));
 const moleculer_1 = require("moleculer");
 const common_1 = require("../common");
-/* modify cache keygen logic to distinguish paramX: [1] and paramX: 1 */
+/*
+modify cache keygen logic to distinguish paramX: [1] and paramX: 1
+TODO: make a PR on moleculerjs/moleculer
+*/
 // @ts-ignore
 const base_1 = tslib_1.__importDefault(require("moleculer/src/cachers/base"));
-const _generateKeyFromObject = base_1.default.prototype._generateKeyFromObject;
+base_1.default.prototype._originalGenerateKeyFromObject = base_1.default.prototype._generateKeyFromObject;
 base_1.default.prototype._generateKeyFromObject = function (obj) {
     if (Array.isArray(obj)) {
         return "[" + obj.map(o => this._generateKeyFromObject(o)).join("|") + "]";
     }
-    return _generateKeyFromObject(obj);
+    return this._originalGenerateKeyFromObject(obj);
 };
 class Moleculer extends common_1.SDKModule {
     constructor() {
