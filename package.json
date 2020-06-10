@@ -1,6 +1,6 @@
 {
   "name": "qmit-sdk",
-  "version": "1.0.23",
+  "version": "1.0.24",
   "description": "QMIT development SDK and CLI",
   "repository": {
     "type": "git",
@@ -27,11 +27,13 @@
   },
   "dependencies": {
     "@types/child-process-promise": "^2.2.1",
+    "awesome-phonenumber": "^2.34.0",
     "child-process-promise": "^2.2.1",
     "ioredis": "^4.17.1",
     "lodash": "^4.17.15",
     "moleculer": "^0.14.6",
     "moleculer-repl": "^0.6.4",
+    "moment": "^2.26.0",
     "open": "^7.0.4",
     "redlock": "^4.1.0",
     "vault-sync": "^2.0.4",

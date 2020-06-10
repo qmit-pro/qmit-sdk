@@ -1,16 +1,24 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.moleculer = exports.Moleculer = void 0;
+exports.moleculer = exports.Moleculer = exports.Validator = void 0;
 const tslib_1 = require("tslib");
 const lodash_1 = tslib_1.__importDefault(require("lodash"));
 const kleur_1 = tslib_1.__importDefault(require("kleur"));
 const os_1 = tslib_1.__importDefault(require("os"));
 const moleculer_1 = require("moleculer");
 const common_1 = require("../common");
-/*
-modify cache keygen logic to distinguish paramX: [1] and paramX: 1
-TODO: make a PR on moleculerjs/moleculer
-*/
+const validation_1 = require("./validation");
+// for type hint
+const fastest_validator_1 = tslib_1.__importDefault(require("fastest-validator"));
+exports.Validator = fastest_validator_1.default;
+// to serialize validator regexp pattern
+if (typeof RegExp.prototype.toJSON === "undefined") {
+    Object.defineProperty(RegExp.prototype, "toJSON", {
+        value() { return this.source.toString(); },
+    });
+}
+// modify cache keygen logic to distinguish paramX: [1] and paramX: 1
+// TODO: make a PR on moleculerjs/moleculer
 // @ts-ignore
 const base_1 = tslib_1.__importDefault(require("moleculer/src/cachers/base"));
 base_1.default.prototype._originalGenerateKeyFromObject = base_1.default.prototype._generateKeyFromObject;
@@ -116,7 +124,13 @@ class Moleculer extends common_1.SDKModule {
                 }
             },
             serializer: "JSON",
-            validator: true,
+            // tslint:disable-next-line:new-parens max-classes-per-file
+            validator: new (class CustomValidator extends moleculer_1.Validator {
+                constructor() {
+                    super();
+                    this.validator = validation_1.validator;
+                }
+            }),
             metrics: {
                 enabled: true,
                 reporter: [
@@ -160,6 +174,12 @@ class Moleculer extends common_1.SDKModule {
             skipProcessEventRegistration: false,
         };
         return lodash_1.default.defaultsDeep(override || {}, defaults);
+    }
+    createValidationError(errors) {
+        return new moleculer_1.Errors.ValidationError("Parameters validation error!", null, errors);
+    }
+    get validator() {
+        return validation_1.validator;
     }
     runREPL() {
         const broker = new moleculer_1.ServiceBroker(this.createServiceBrokerOptions({

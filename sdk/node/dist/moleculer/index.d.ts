@@ -1,5 +1,8 @@
-import { BrokerOptions } from "moleculer";
+import { BrokerOptions, Errors } from "moleculer";
 import { SDKModule } from "../common";
+import { ValidationErrorEntry } from "./validation";
+import Validator from "fastest-validator";
+export { Validator };
 export declare class Moleculer extends SDKModule {
     getInstalledVersion(): Promise<any>;
     readonly minInstalledVersion = "v0.7.1";
@@ -7,6 +10,8 @@ export declare class Moleculer extends SDKModule {
     createServiceBrokerOptions(override?: Omit<BrokerOptions, "namespace" | "transporter">, options?: {
         quiet?: boolean;
     }): BrokerOptions;
+    createValidationError(errors: ValidationErrorEntry[]): Errors.ValidationError;
+    get validator(): Validator;
     runREPL(): Promise<void>;
     getCurrentContext(timeout?: number): Promise<unknown>;
 }

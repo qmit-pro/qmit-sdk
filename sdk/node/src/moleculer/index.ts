@@ -1,23 +1,33 @@
 import _ from "lodash";
 import kleur from "kleur";
 import os from "os";
-import { ServiceBroker, BrokerOptions } from "moleculer";
+import { ServiceBroker, BrokerOptions, Validator as MoleculerBaseValidator, Errors } from "moleculer";
 import { exec, SDKModule } from "../common";
+import { validator, ValidationErrorEntry } from "./validation";
 
+// for type hint
+import Validator from "fastest-validator";
+export { Validator };
 
-/*
-modify cache keygen logic to distinguish paramX: [1] and paramX: 1
-TODO: make a PR on moleculerjs/moleculer
-*/
+// to serialize validator regexp pattern
+if (typeof (RegExp.prototype as any).toJSON === "undefined") {
+  Object.defineProperty(RegExp.prototype, "toJSON", {
+    value() { return this.source.toString(); },
+  });
+}
+
+// modify cache keygen logic to distinguish paramX: [1] and paramX: 1
+// TODO: make a PR on moleculerjs/moleculer
 // @ts-ignore
-import BaseCacher from "moleculer/src/cachers/base";
-BaseCacher.prototype._originalGenerateKeyFromObject = BaseCacher.prototype._generateKeyFromObject;
-BaseCacher.prototype._generateKeyFromObject = function (obj: any): string {
+import MoleculerBaseCacher from "moleculer/src/cachers/base";
+MoleculerBaseCacher.prototype._originalGenerateKeyFromObject = MoleculerBaseCacher.prototype._generateKeyFromObject;
+MoleculerBaseCacher.prototype._generateKeyFromObject = function (obj: any): string {
   if (Array.isArray(obj)) {
     return "[" + obj.map(o => this._generateKeyFromObject(o)).join("|") + "]";
   }
   return this._originalGenerateKeyFromObject(obj);
 }
+
 
 export class Moleculer extends SDKModule {
   public getInstalledVersion() {
@@ -129,7 +139,14 @@ export class Moleculer extends SDKModule {
 
       serializer: "JSON",
 
-      validator: true,
+      // tslint:disable-next-line:new-parens max-classes-per-file
+      validator: new (class CustomValidator extends MoleculerBaseValidator {
+        private validator: any;
+        constructor() {
+          super();
+          this.validator = validator;
+        }
+      }),
 
       metrics: {
         enabled: true,
@@ -185,6 +202,14 @@ export class Moleculer extends SDKModule {
     };
 
     return _.defaultsDeep(override || {}, defaults);
+  }
+
+  public createValidationError(errors: ValidationErrorEntry[]) {
+    return new Errors.ValidationError("Parameters validation error!", null as any, errors);
+  }
+
+  public get validator() {
+    return validator;
   }
 
   public runREPL() {

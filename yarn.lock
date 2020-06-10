@@ -854,6 +854,11 @@ atob@^2.1.2:
   resolved "https://registry.yarnpkg.com/atob/-/atob-2.1.2.tgz#6d9517eb9e030d2436666651e86bd9f6f13533c9"
   integrity sha512-Wm6ukoaOGJi/73p/cl2GvLjTI5JM1k/O14isD73YML8StrH/7/lRFgmg8nICZgD3bZZvjwCGxtMOD3wWNAu8cg==
 
+awesome-phonenumber@^2.34.0:
+  version "2.34.0"
+  resolved "https://registry.yarnpkg.com/awesome-phonenumber/-/awesome-phonenumber-2.34.0.tgz#c5170e40173b6c506d28a3ca79d3439ca71671c6"
+  integrity sha512-P2ckagK5jen79wOqT+vEngJ1Zx5PCRaaBtu2CiCOBjaVjIDm27hewDiAMqxEwZ3fhtzq6l0WDtIiK56lTvC5dA==
+
 aws-sign2@~0.7.0:
   version "0.7.0"
   resolved "https://registry.yarnpkg.com/aws-sign2/-/aws-sign2-0.7.0.tgz#b46e890934a9591f2d2f6f86d7e6a9f1b3fe76a8"
@@ -3905,6 +3910,11 @@ moleculer@^0.14.6:
     lodash "^4.17.15"
     lru-cache "^5.1.1"
     node-fetch "^2.6.0"
+
+moment@^2.26.0:
+  version "2.26.0"
+  resolved "https://registry.yarnpkg.com/moment/-/moment-2.26.0.tgz#5e1f82c6bafca6e83e808b30c8705eed0dcbd39a"
+  integrity sha512-oIixUO+OamkUkwjhAVE18rAMfRJNsNe/Stid/gwHSOfHrOtw9EhAY2AHvdKZ/k/MggcYELFCJz/Sn2pL8b8JMw==
 
 mri@1.1.4:
   version "1.1.4"
