@@ -160,7 +160,7 @@ const command: yargs.CommandModule = {
         `telepresence`,
         (ctx => {
           if (!ctx) return "-";
-          return `session: ${ctx.sessionId}\ndeployment: ${kleur.blue(ctx.deployment.metadata.name)}\nnamespace: ${enabled.kubectl && data.kubectl.currentContext && ((data.kubectl.currentContext.namespace || "default") === ctx.deployment.metadata.namespace) ? kleur.blue(ctx.deployment.metadata.namespace) : ctx.deployment.metadata.namespace}\nimages: ${ctx.deployment.spec.template.spec.containers.map((c: any) => c.image).join(", ")}\ncreated at: ${ctx.deployment.metadata.creationTimestamp}`;
+          return `session: ${ctx.sessionId}\ndeployment: ${kleur.blue(ctx.deployment?.metadata.name)}\nnamespace: ${enabled.kubectl && data.kubectl.currentContext && ((data.kubectl.currentContext.namespace || "default") === ctx.deployment?.metadata.namespace) ? kleur.blue(ctx.deployment?.metadata.namespace) : ctx.deployment?.metadata.namespace}\nimages: ${ctx.deployment?.spec.template.spec.containers.map((c: any) => c.image).join(", ")}\ncreated at: ${ctx.deployment?.metadata.creationTimestamp}`;
         })(data.telepresence.currentContext),
         (installedVersion => {
           if (!installedVersion) {
