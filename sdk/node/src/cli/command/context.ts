@@ -108,8 +108,8 @@ const command: yargs.CommandModule = {
       tableRows.push([
         `vault`,
         (loginStatus => {
-          if (!loginStatus) return "-";
-          return `email: ${kleur.blue(loginStatus.meta.email)}\nname: ${loginStatus.meta.name}\nrole: ${loginStatus.meta.role}\npolicies: ${kleur.blue(loginStatus.identity_policies.join(", "))}`;
+          if (!(loginStatus && loginStatus.meta)) return "-";
+          return `email: ${kleur.blue(loginStatus.meta.email)}\nname: ${loginStatus.meta.name}\nrole: ${loginStatus.meta.role}\npolicies: ${kleur.blue((loginStatus.identity_policies || []).join(", "))}`;
         })(data.vault.loginStatus),
         (installedVersion => {
           if (!installedVersion) {
