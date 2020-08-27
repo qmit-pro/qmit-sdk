@@ -54,12 +54,12 @@ startedAt: {
 validator.messages.datetime = `The {field} field must be a [expected] format string.`;
 validator.add("datetime", ({ schema, messages }: any, field: any, context: any) => {
   context.moment = moment;
-  context.format = schema.format || "YYYY-MM-DDThh:mm:ssZ";
+  context.format = schema.format || undefined;
   return {
     source: `
       const v = context.moment(value, context.format);
       if (v.isValid()) {
-        return v.format(context.format);
+        return context.format ? v.format(context.format) : v.toISOString();
       }
       ${validator.makeError({ type: "datetime", actual: "value", expected: "context.format", messages })}
     `,
