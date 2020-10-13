@@ -1,0 +1,9 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: nginx-ingress-nginx-controller
+  namespace: nginx
+# ref: https://kubernetes.github.io/ingress-nginx/user-guide/nginx-configuration/configmap/
+data:
+  proxy-read-timeout: "600"
+  proxy-send-timeout: "600"

@@ -38,24 +38,25 @@
         - `kubectl config use-context dev`
     - Setup helm client (v3) locally (Package manager)
     - Setup nginx-ingress-controller (LB, IngressController)
-        - `helm install stable/nginx-ingress --namespace nginx --name nginx-ingress`
-        - `echo $(kubectl get svc -n nginx nginx-ingress-controller -o jsonpath='{.status.loadBalancer.ingress[0].ip}')`
+        - `helm repo add ingress-nginx https://kubernetes.github.io/ingress-nginx && helm repo update`
+        - `helm install --create-namespace --namespace nginx nginx ingress-nginx/ingress-nginx`
+        - `echo $(kubectl get svc -n nginx  nginx-ingress-nginx-controller -o jsonpath='{.status.loadBalancer.ingress[0].ip}')`
         - DNS record `dev.qmit.pro.	A -> [LB IP]` created
         - DNS record `*.dev.qmit.pro.	CNAME -> dev.qmit.pro.` created
-        - `kubectl -n nginx patch deploy nginx-ingress-controller -p "$(cat ./base/05-nginx-ingress-controller-patch.yaml)"` for HA; initial replica: 1
-        - `kubectl -n nginx patch svc nginx-ingress-controller -p '{"spec":{"externalTrafficPolicy":"Local"}}'` for client IP forwarding
-        - `kubectl -n nginx patch configmap ingress-controller-leader-nginx -p '{"data":{"proxy-read-timeout": "300", "proxy-send-timeout": "300"}}'` for nginx configuration: [ref. doc](https://kubernetes.github.io/ingress-nginx/user-guide/nginx-configuration/configmap/)
+        - `kubectl -n nginx patch deploy nginx-ingress-nginx-controller -p "$(cat ./base/05-nginx-ingress-controller-patch.yaml)"` for HA; initial replica: 1
+        - `kubectl patch svc -n nginx nginx-ingress-nginx-controller -p '{"spec":{"externalTrafficPolicy":"Local"}}'` for client IP forwarding
+        - Set nginx configuration: [ref. doc](https://kubernetes.github.io/ingress-nginx/user-guide/nginx-configuration/configmap/)
+        - `kubectl apply -f ./base/06-nginx-ingress-controller-configmap.yaml`
     - Setup cert-manager (ACME manager)
-        - `kubectl apply --validate=false -f https://raw.githubusercontent.com/jetstack/cert-manager/release-0.12/deploy/manifests/00-crds.yaml`
-        - `kubectl create ns cert-manager && kubectl label ns cert-manager certmanager.k8s.io/disable-validation=true`
+        - `kubectl apply --validate=false -f https://github.com/jetstack/cert-manager/releases/download/v1.0.2/cert-manager.crds.yaml`
         - `helm repo add jetstack https://charts.jetstack.io && helm repo update`
-        - `helm install jetstack/cert-manager --name cert-manager --namespace cert-manager --version v0.12.0`
+        - `helm install --create-namespace --namespace cert-manager --version v1.0.2 cert-manager jetstack/cert-manager --set installCRDs=false`
         - `kubectl apply -f ./base/10-cluster-issuers.yaml`
     - Setup ACL policies
         - `kubectl apply -f ./rbac`
     - Test
         - `kubectl apply -f ./base/15-source-ip-app.yaml && kubectl apply -f ./base/15-source-ip-app-ingress-dev.yaml`
-        - Check the IP from `curl ifconfig.co` is equal to the `x-forwarded-for/x-real-ip` field from `curl https://ip.qmit.pro`
+        - Check the IP from `curl ifconfig.co` is equal to the `x-forwarded-for/x-real-ip` field from `curl https://ip.dev.qmit.pro`
         - `kubectl delete -f ./base/15-source-ip-app.yaml && kubectl delete -f ./base/15-source-ip-app-ingress-dev.yaml`
 
 1. GKE Cluster `prod` created
@@ -74,8 +75,6 @@
         - `kubectl apply -f ./base/15-source-ip-app.yaml && kubectl apply -f ./base/15-source-ip-app-ingress-prod.yaml`
         - Check the IP from `curl ifconfig.co` is equal to the `x-forwarded-for/x-real-ip` field from `curl https://ip.qmit.pro`
         - `kubectl delete -f ./base/15-source-ip-app.yaml && kubectl delete -f ./base/15-source-ip-app-ingress-prod.yaml`
-    - Additional
-        - `kubectl apply -f ./base/20-redirection-ingresses-prod.yaml`
 
 1. GCP SA `gke-internal` (project-editor) created
 
