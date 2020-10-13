@@ -36,16 +36,15 @@
         - `gcloud container clusters get-credentials --project qmit-pro --zone asia-northeast1-a dev`
         - `kubectl config rename-context gke_qmit-pro_asia-northeast1-a_dev dev`
         - `kubectl config use-context dev`
-    - Setup helm/tiller (Package manager)
-        - `kubectl apply -f ./base/00-tiller.yaml`
-        - `helm init --service-account tiller --history-max 100`
+    - Setup helm client (v3) locally (Package manager)
     - Setup nginx-ingress-controller (LB, IngressController)
         - `helm install stable/nginx-ingress --namespace nginx --name nginx-ingress`
         - `echo $(kubectl get svc -n nginx nginx-ingress-controller -o jsonpath='{.status.loadBalancer.ingress[0].ip}')`
         - DNS record `dev.qmit.pro.	A -> [LB IP]` created
         - DNS record `*.dev.qmit.pro.	CNAME -> dev.qmit.pro.` created
         - `kubectl -n nginx patch deploy nginx-ingress-controller -p "$(cat ./base/05-nginx-ingress-controller-patch.yaml)"` for HA; initial replica: 1
-        - `kubectl patch svc -n nginx nginx-ingress-controller -p '{"spec":{"externalTrafficPolicy":"Local"}}'` for client IP forwarding
+        - `kubectl -n nginx patch svc nginx-ingress-controller -p '{"spec":{"externalTrafficPolicy":"Local"}}'` for client IP forwarding
+        - `kubectl -n nginx patch configmap ingress-controller-leader-nginx -p '{"data":{"proxy-read-timeout": "300", "proxy-send-timeout": "300"}}'` for nginx configuration: [ref. doc](https://kubernetes.github.io/ingress-nginx/user-guide/nginx-configuration/configmap/)
     - Setup cert-manager (ACME manager)
         - `kubectl apply --validate=false -f https://raw.githubusercontent.com/jetstack/cert-manager/release-0.12/deploy/manifests/00-crds.yaml`
         - `kubectl create ns cert-manager && kubectl label ns cert-manager certmanager.k8s.io/disable-validation=true`
